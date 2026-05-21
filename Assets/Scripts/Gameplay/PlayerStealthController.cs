@@ -19,6 +19,8 @@ namespace MobilOfl.Gameplay
         [SerializeField] private float npcAwarenessRadius = 7.2f;
         [SerializeField] private float forcedCalmInteractionThreshold = 0.72f;
         [SerializeField] private float scanNoiseBoost = 0.2f;
+        [SerializeField] private float quietSightNoiseThreshold = 0.18f;
+        [SerializeField] private float sightMessageCooldown = 8f;
 
         private static readonly Collider[] NpcHits = new Collider[24];
 
@@ -109,15 +111,17 @@ namespace MobilOfl.Gameplay
 
         public void RegisterNpcSightPressure(float amount, string watcherName)
         {
-            _sightPressure = Mathf.Clamp01(_sightPressure + Mathf.Max(0f, amount));
+            var safeAmount = Mathf.Max(0f, amount);
+            var playerIsQuiet = _noiseLevel < quietSightNoiseThreshold && _alertLevel < CalmInteractionThreshold * 0.45f;
+            _sightPressure = Mathf.Clamp01(_sightPressure + (playerIsQuiet ? safeAmount * 0.12f : safeAmount));
             _lastSightPressureAt = Time.time;
 
-            if (CaseSessionManager.Instance == null || Time.time < _nextSpottedMessageAt)
+            if (playerIsQuiet || CaseSessionManager.Instance == null || Time.time < _nextSpottedMessageAt)
             {
                 return;
             }
 
-            _nextSpottedMessageAt = Time.time + 2.4f;
+            _nextSpottedMessageAt = Time.time + Mathf.Max(2.4f, sightMessageCooldown);
             var resolvedWatcher = string.IsNullOrWhiteSpace(watcherName) ? "Bir NPC" : watcherName;
             CaseSessionManager.Instance.PublishMessage($"{resolvedWatcher} seni gorus alanina aldi. Daha sessiz hareket et.");
         }

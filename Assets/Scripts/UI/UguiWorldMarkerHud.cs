@@ -318,11 +318,11 @@ namespace MobilOfl.UI
             anchor = new Vector2(Mathf.Clamp(viewport.x, 0.1f, 0.9f), Mathf.Clamp(viewport.y, 0.14f, 0.88f));
             var scanBoost = scanActive ? 1f : 0f;
             markerText = BuildMarkerText(marker.Label, distance);
-            var markerWidth = Mathf.Clamp(markerText.Length * 7.6f + 20f, 128f, 270f);
-            var slotOffset = ((slotIndex % 3) - 1) * 14f;
+            var markerWidth = Mathf.Clamp(markerText.Length * 8.4f + 24f, 148f, 310f);
+            var slotOffset = ((slotIndex % 3) - 1) * 16f;
             anchoredPosition = new Vector2(0f, marker.VerticalOffset + slotOffset);
-            size = Vector2.Lerp(new Vector2(markerWidth, 24f), new Vector2(markerWidth + 14f, 30f), scanBoost);
-            backgroundColor = Color.Lerp(new Color(0.04f, 0.07f, 0.1f, 0.76f), new Color(0.04f, 0.16f, 0.18f, 0.86f), scanBoost);
+            size = Vector2.Lerp(new Vector2(markerWidth, 28f), new Vector2(markerWidth + 16f, 35f), scanBoost);
+            backgroundColor = Color.Lerp(new Color(0.04f, 0.07f, 0.1f, 0.82f), new Color(0.04f, 0.16f, 0.18f, 0.9f), scanBoost);
             accentColor = Color.Lerp(marker.Color, new Color(0.28f, 0.95f, 0.85f, 1f), scanBoost * 0.5f);
             return true;
         }
@@ -351,16 +351,16 @@ namespace MobilOfl.UI
             var card = RuntimeUiFactory.CreateCard(
                 "Marker" + index,
                 _root,
-                new Color(0.04f, 0.07f, 0.1f, 0.76f),
+                new Color(0.04f, 0.07f, 0.1f, 0.82f),
                 ModernGuiTheme.AccentWarmColor);
-            RuntimeUiFactory.AddVerticalLayout(card, 0f, new RectOffset(8, 8, 6, 5));
-            var text = RuntimeUiFactory.CreateText("Label", card, string.Empty, 12, ModernGuiTheme.TextColor, FontStyle.Bold, TextAnchor.MiddleCenter);
+            RuntimeUiFactory.AddVerticalLayout(card, 0f, new RectOffset(10, 10, 8, 7));
+            var text = RuntimeUiFactory.CreateText("Label", card, string.Empty, 14, ModernGuiTheme.TextColor, FontStyle.Bold, TextAnchor.MiddleCenter);
             text.alignment = TextAnchor.MiddleCenter;
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
             text.verticalOverflow = VerticalWrapMode.Truncate;
             text.resizeTextForBestFit = true;
-            text.resizeTextMinSize = 10;
-            text.resizeTextMaxSize = 12;
+            text.resizeTextMinSize = 11;
+            text.resizeTextMaxSize = 14;
 
             var accent = card.Find("Accent");
             return new MarkerView

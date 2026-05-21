@@ -112,6 +112,11 @@ namespace MobilOfl.Gameplay
             return _currentInteractable != null && _currentInteractable.TryInteract(gameObject);
         }
 
+        public void SetMobileButton(MobileButton button)
+        {
+            mobileInteractButton = button;
+        }
+
         private void UpdateCurrentInteractable(bool interactHeld, bool interactPressed)
         {
             _currentInteractable = null;
@@ -160,13 +165,15 @@ namespace MobilOfl.Gameplay
                 distance += Mathf.Max(0f, scanAssistDistanceBonus);
             }
 
+            InteractableBase exactInteractable = null;
             if (Physics.Raycast(ray, out var exactHit, distance, interactMask, QueryTriggerInteraction.Collide))
             {
-                interactable = exactHit.collider.GetComponentInParent<InteractableBase>();
-                if (interactable != null &&
-                    interactable.isActiveAndEnabled &&
-                    interactable.CanShowInteractionPrompt(gameObject))
+                exactInteractable = exactHit.collider.GetComponentInParent<InteractableBase>();
+                if (exactInteractable is NpcInteractable &&
+                    exactInteractable.isActiveAndEnabled &&
+                    exactInteractable.CanShowInteractionPrompt(gameObject))
                 {
+                    interactable = exactInteractable;
                     return true;
                 }
             }
@@ -196,6 +203,11 @@ namespace MobilOfl.Gameplay
                     ? Vector3.Dot(ray.direction, toHit.normalized)
                     : 1f;
                 var score = hit.distance + (1f - Mathf.Clamp01(alignment)) * 1.35f;
+                if (candidate is NpcInteractable)
+                {
+                    score -= 0.85f;
+                }
+
                 if (score >= bestScore)
                 {
                     continue;
@@ -205,7 +217,20 @@ namespace MobilOfl.Gameplay
                 interactable = candidate;
             }
 
-            return interactable != null;
+            if (interactable != null)
+            {
+                return true;
+            }
+
+            if (exactInteractable != null &&
+                exactInteractable.isActiveAndEnabled &&
+                exactInteractable.CanShowInteractionPrompt(gameObject))
+            {
+                interactable = exactInteractable;
+                return true;
+            }
+
+            return false;
         }
 
         private void SetCurrentInteractable(InteractableBase interactable)

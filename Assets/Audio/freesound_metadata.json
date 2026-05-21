@@ -1,0 +1,122 @@
+[
+  {
+    "slot": "ambience_school_hall",
+    "query": "room tone fluorescent hum",
+    "status": "downloaded",
+    "id": 784208,
+    "name": "1950s Flourescent Bathroom Lights (quiet room tone)",
+    "username": "OverlookHotelRecords",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "duration": 29.6638,
+    "url": "https://freesound.org/people/OverlookHotelRecords/sounds/784208/",
+    "file": "Assets/Resources/Audio/Freesound/ambience_school_hall__784208__1950s_Flourescent_Bathroom_Lights_quiet_room_tone.mp3"
+  },
+  {
+    "slot": "footstep_wood_1",
+    "query": "wood floor footstep indoor",
+    "status": "downloaded",
+    "id": 366111,
+    "name": "Indoor Footsteps.wav",
+    "username": "WakuWakuWakuWaku",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "duration": 3.822,
+    "url": "https://freesound.org/people/WakuWakuWakuWaku/sounds/366111/",
+    "file": "Assets/Resources/Audio/Freesound/footstep_wood_1__366111__Indoor_Footsteps.wav.mp3"
+  },
+  {
+    "slot": "footstep_wood_2",
+    "query": "footsteps wood floor",
+    "status": "downloaded",
+    "id": 732813,
+    "name": "Generic Soft Wood/Floor Hits",
+    "username": "SirBagel",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "duration": 2.96433,
+    "url": "https://freesound.org/people/SirBagel/sounds/732813/",
+    "file": "Assets/Resources/Audio/Freesound/footstep_wood_2__732813__Generic_Soft_Wood_Floor_Hits.mp3"
+  },
+  {
+    "slot": "door_locked",
+    "query": "locked door handle rattle",
+    "status": "downloaded",
+    "id": 642877,
+    "name": "closet locked.ogg",
+    "username": "Kneeling",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "duration": 1.93585,
+    "url": "https://freesound.org/people/Kneeling/sounds/642877/",
+    "file": "Assets/Resources/Audio/Freesound/door_locked__642877__closet_locked.ogg.mp3"
+  },
+  {
+    "slot": "door_open",
+    "query": "wooden door open close creak",
+    "status": "downloaded",
+    "id": 402465,
+    "name": "Door Open Close Heavy Wooden Hard Loud Creak Seal Theatre",
+    "username": "LampEight",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "duration": 3.90756,
+    "url": "https://freesound.org/people/LampEight/sounds/402465/",
+    "file": "Assets/Resources/Audio/Freesound/door_open__402465__Door_Open_Close_Heavy_Wooden_Hard_Loud_Creak_Seal_Theatre.mp3"
+  },
+  {
+    "slot": "item_pickup",
+    "query": "pickup item game",
+    "status": "downloaded",
+    "id": 665183,
+    "name": "Item or Material Pickup Pop 1 of 3",
+    "username": "el_boss",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "duration": 0.0711111,
+    "url": "https://freesound.org/people/el_boss/sounds/665183/",
+    "file": "Assets/Resources/Audio/Freesound/item_pickup__665183__Item_or_Material_Pickup_Pop_1_of_3.mp3"
+  },
+  {
+    "slot": "paper_rustle",
+    "query": "paper rustle page short",
+    "status": "downloaded",
+    "id": 566189,
+    "name": "Pickup_Note_01.wav",
+    "username": "scholzi982",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "duration": 1.0,
+    "url": "https://freesound.org/people/scholzi982/sounds/566189/",
+    "file": "Assets/Resources/Audio/Freesound/paper_rustle__566189__Pickup_Note_01.wav.mp3"
+  },
+  {
+    "slot": "ui_click",
+    "query": "soft ui click button",
+    "status": "downloaded",
+    "id": 833628,
+    "name": "UI Button Sound (Cancel / Back / Exit)",
+    "username": "Nomagician",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "duration": 1.16351,
+    "url": "https://freesound.org/people/Nomagician/sounds/833628/",
+    "file": "Assets/Resources/Audio/Freesound/ui_click__833628__UI_Button_Sound_Cancel_Back_Exit.mp3"
+  },
+  {
+    "slot": "scan_pulse",
+    "query": "beep scanner",
+    "status": "downloaded",
+    "id": 804723,
+    "name": "BEEP-Samsung Galaxy Smartphone, CU_Barcode Scanner, Melodic Beeps_Nicholas Judy_TDC",
+    "username": "designerschoice",
+    "license": "http://creativecommons.org/publicdomain/zero/1.0/",
+    "duration": 0.172857,
+    "url": "https://freesound.org/people/designerschoice/sounds/804723/",
+    "file": "Assets/Resources/Audio/Freesound/scan_pulse__804723__BEEP-Samsung_Galaxy_Smartphone_CU_Barcode_Scanner_Melodic_Beeps_Nicholas_Judy_TD.mp3"
+  },
+  {
+    "slot": "suspense_sting",
+    "query": "suspense hit",
+    "status": "downloaded",
+    "id": 448204,
+    "name": "Cartoon Scary Hit",
+    "username": "tyops",
+    "license": "https://creativecommons.org/licenses/by/4.0/",
+    "duration": 1.99471,
+    "url": "https://freesound.org/people/tyops/sounds/448204/",
+    "file": "Assets/Resources/Audio/Freesound/suspense_sting__448204__Cartoon_Scary_Hit.mp3"
+  }
+]

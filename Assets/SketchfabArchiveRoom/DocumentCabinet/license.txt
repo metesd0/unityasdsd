@@ -1,0 +1,11 @@
+Model Information:
+* title:	Document сabinet
+* source:	https://sketchfab.com/3d-models/document-abinet-ce4efa18d90a42599c61f52a3e995c88
+* author:	BlinFriend (https://sketchfab.com/BlinFriend)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Document сabinet" (https://sketchfab.com/3d-models/document-abinet-ce4efa18d90a42599c61f52a3e995c88) by BlinFriend (https://sketchfab.com/BlinFriend) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

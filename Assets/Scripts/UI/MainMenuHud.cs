@@ -102,6 +102,16 @@ namespace MobilOfl.UI
 
         private void OnEnable()
         {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else if (Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
             EnsureBootstrap();
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
 
@@ -122,6 +132,14 @@ namespace MobilOfl.UI
                 bootstrap.JoinCodeChanged -= HandleJoinCodeChanged;
             }
 
+            if (Instance == this)
+            {
+                IsBlockingGameplay = false;
+            }
+        }
+
+        private void OnDestroy()
+        {
             if (Instance == this)
             {
                 Instance = null;
@@ -441,7 +459,7 @@ namespace MobilOfl.UI
             GUILayout.BeginVertical(_cardStyle);
             GUILayout.Label("Kontroller", _bodyStyle);
             GUILayout.Label("PC: WASD hareket, Mouse bakis, E etkilesim, Tab dosya, Esc menu.", _mutedStyle);
-            GUILayout.Label("Mobil: Joystick hareket, sag ekran bakis, AL etkilesim, DOSYA vaka dosyasi.", _mutedStyle);
+            GUILayout.Label("Mobil: Joystick hareket, sag ekran bakis, AL etkilesim.", _mutedStyle);
             GUILayout.Label("Ipucu: Vaka masasina donup notebook uzerinden suphelileri karsilastir.", _mutedStyle);
             if (bootstrap != null)
             {

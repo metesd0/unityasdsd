@@ -40,14 +40,14 @@ namespace MobilOfl.Gameplay
             _source.spatialBlend = 0f;
             _source.volume = 0.42f;
 
-            _collectClip = CreateTone("Collect", 740f, 980f, 0.12f, 0.22f);
-            _toolClip = CreateTone("Tool", 520f, 820f, 0.16f, 0.24f);
-            _conversationClip = CreateTone("Conversation", 360f, 430f, 0.1f, 0.18f);
-            _noteClip = CreateTone("Note", 620f, 0f, 0.08f, 0.18f);
-            _inferenceClip = CreateTone("Inference", 440f, 1320f, 0.2f, 0.22f);
-            _successClip = CreateTone("Success", 520f, 1040f, 0.32f, 0.25f);
-            _warningClip = CreateTone("Warning", 180f, 120f, 0.22f, 0.26f);
-            _scanClip = CreateTone("Scan", 260f, 680f, 0.28f, 0.14f);
+            _collectClip = LoadFreesoundClip("item_pickup") ?? LoadFreesoundClip("paper_rustle") ?? CreateTone("Collect", 740f, 980f, 0.12f, 0.22f);
+            _toolClip = LoadFreesoundClip("item_pickup") ?? CreateTone("Tool", 520f, 820f, 0.16f, 0.24f);
+            _conversationClip = LoadFreesoundClip("ui_click") ?? CreateTone("Conversation", 360f, 430f, 0.1f, 0.18f);
+            _noteClip = LoadFreesoundClip("paper_rustle") ?? CreateTone("Note", 620f, 0f, 0.08f, 0.18f);
+            _inferenceClip = LoadFreesoundClip("suspense_sting") ?? CreateTone("Inference", 440f, 1320f, 0.2f, 0.22f);
+            _successClip = LoadFreesoundClip("ui_click") ?? CreateTone("Success", 520f, 1040f, 0.32f, 0.25f);
+            _warningClip = LoadFreesoundClip("door_locked") ?? LoadFreesoundClip("suspense_sting") ?? CreateTone("Warning", 180f, 120f, 0.22f, 0.26f);
+            _scanClip = LoadFreesoundClip("scan_pulse") ?? CreateTone("Scan", 260f, 680f, 0.28f, 0.14f);
             if (AudioListener.volume <= 0.001f)
             {
                 AudioListener.volume = 0.75f;
@@ -188,6 +188,21 @@ namespace MobilOfl.Gameplay
             var clip = AudioClip.Create(name, sampleCount, 1, SampleRate, false);
             clip.SetData(samples, 0);
             return clip;
+        }
+
+        private static AudioClip LoadFreesoundClip(string prefix)
+        {
+            var clips = Resources.LoadAll<AudioClip>("Audio/Freesound");
+            for (var i = 0; i < clips.Length; i++)
+            {
+                var clip = clips[i];
+                if (clip != null && clip.name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    return clip;
+                }
+            }
+
+            return null;
         }
     }
 }

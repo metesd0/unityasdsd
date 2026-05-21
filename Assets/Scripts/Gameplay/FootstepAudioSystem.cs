@@ -21,6 +21,7 @@ namespace MobilOfl.Gameplay
         [SerializeField] private float baseVolume = 0.35f;
         [SerializeField] private float sprintVolumeBoost = 0.18f;
         [SerializeField] private float crouchVolumeReduction = 0.2f;
+        [SerializeField] private AudioClip[] footstepClips;
         [SerializeField] private SurfaceProfile[] surfaceProfiles;
 
         private CharacterController _characterController;
@@ -38,6 +39,7 @@ namespace MobilOfl.Gameplay
             _characterController = GetComponent<CharacterController>();
             _movementController = GetComponent<PrototypeFirstPersonController>();
             EnsureAudioSource();
+            LoadFootstepClipsIfNeeded();
             _lastPosition = transform.position;
         }
 
@@ -109,8 +111,38 @@ namespace MobilOfl.Gameplay
 
             _audioSource.volume = Mathf.Clamp01(volume);
 
-            // Procedural footstep - create a short noise burst
+            if (footstepClips != null && footstepClips.Length > 0)
+            {
+                var clip = footstepClips[Random.Range(0, footstepClips.Length)];
+                if (clip != null)
+                {
+                    _audioSource.PlayOneShot(clip, _audioSource.volume);
+                    return;
+                }
+            }
+
             PlayProceduralStep(isSprinting);
+        }
+
+        private void LoadFootstepClipsIfNeeded()
+        {
+            if (footstepClips != null && footstepClips.Length > 0)
+            {
+                return;
+            }
+
+            var allClips = Resources.LoadAll<AudioClip>("Audio/Freesound");
+            var matches = new System.Collections.Generic.List<AudioClip>();
+            for (var i = 0; i < allClips.Length; i++)
+            {
+                var clip = allClips[i];
+                if (clip != null && clip.name.StartsWith("footstep_", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    matches.Add(clip);
+                }
+            }
+
+            footstepClips = matches.ToArray();
         }
 
         private void PlayProceduralStep(bool isSprinting)

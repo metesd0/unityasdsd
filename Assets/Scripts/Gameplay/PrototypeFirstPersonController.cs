@@ -71,6 +71,25 @@ namespace MobilOfl.Gameplay
             _sprintStamina = Mathf.Clamp01(_sprintStamina + amount);
         }
 
+        public void ResetVerticalVelocity()
+        {
+            _verticalVelocity = 0f;
+        }
+
+        public void SetMobileControls(
+            MobileJoystick moveJoystick,
+            MobileLookArea lookArea,
+            MobileButton sprintButton,
+            MobileButton jumpButton,
+            MobileButton crouchButton)
+        {
+            mobileMoveJoystick = moveJoystick;
+            mobileLookArea = lookArea;
+            mobileSprintButton = sprintButton;
+            mobileJumpButton = jumpButton;
+            mobileCrouchButton = crouchButton;
+        }
+
         private void Awake()
         {
             _characterController = GetComponent<CharacterController>();

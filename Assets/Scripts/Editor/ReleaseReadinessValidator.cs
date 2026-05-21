@@ -157,7 +157,7 @@ namespace MobilOfl.EditorTools
 
             if (string.IsNullOrWhiteSpace(caseDefinition.CulpritTimeline))
             {
-                errors.Add("Dogru zaman cizelgesi metni bos.");
+                errors.Add("Dogru olay sirasi metni bos.");
             }
 
             if (caseDefinition.MotiveOptions.Count < 2)
@@ -167,7 +167,7 @@ namespace MobilOfl.EditorTools
 
             if (caseDefinition.TimelineOptions.Count < 2)
             {
-                warnings.Add("Final karar icin zaman cizelgesi secenegi az. Dogru cevapla birlikte en az 2-3 secenek hedefle.");
+                warnings.Add("Final karar icin olay sirasi secenegi az. Dogru cevapla birlikte en az 2-3 secenek hedefle.");
             }
 
             if (!ContainsOption(caseDefinition.MotiveOptions, caseDefinition.CulpritMotive))
@@ -177,11 +177,11 @@ namespace MobilOfl.EditorTools
 
             if (!ContainsOption(caseDefinition.TimelineOptions, caseDefinition.CulpritTimeline))
             {
-                errors.Add("Dogru zaman cizelgesi final secenekleri icinde yok.");
+                errors.Add("Dogru olay sirasi final secenekleri icinde yok.");
             }
 
             AddDuplicateOptionWarnings("motivasyon", caseDefinition.MotiveOptions, warnings);
-            AddDuplicateOptionWarnings("zaman cizelgesi", caseDefinition.TimelineOptions, warnings);
+            AddDuplicateOptionWarnings("olay sirasi", caseDefinition.TimelineOptions, warnings);
         }
 
         private static bool ContainsOption(IReadOnlyList<string> options, string expected)

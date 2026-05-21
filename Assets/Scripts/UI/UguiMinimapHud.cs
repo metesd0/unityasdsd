@@ -88,14 +88,14 @@ namespace MobilOfl.UI
             card.anchorMin = new Vector2(1f, 1f);
             card.anchorMax = new Vector2(1f, 1f);
             card.pivot = new Vector2(1f, 1f);
-            card.anchoredPosition = new Vector2(-14f, -104f);
-            card.sizeDelta = new Vector2(174f, 148f);
-            RuntimeUiFactory.AddVerticalLayout(card, 2f, new RectOffset(9, 9, 9, 7));
-            RuntimeUiFactory.CreateText("Title", card, "HARITA", 12, ModernGuiTheme.TextColor, FontStyle.Bold, TextAnchor.UpperLeft);
-            _zoneText = RuntimeUiFactory.CreateText("Zone", card, string.Empty, 10, ModernGuiTheme.MutedTextColor, FontStyle.Bold, TextAnchor.UpperLeft);
+            card.anchoredPosition = new Vector2(-16f, -108f);
+            card.sizeDelta = new Vector2(210f, 178f);
+            RuntimeUiFactory.AddVerticalLayout(card, 3f, new RectOffset(11, 11, 11, 9));
+            RuntimeUiFactory.CreateText("Title", card, "HARITA", 14, ModernGuiTheme.TextColor, FontStyle.Bold, TextAnchor.UpperLeft);
+            _zoneText = RuntimeUiFactory.CreateText("Zone", card, string.Empty, 12, ModernGuiTheme.MutedTextColor, FontStyle.Bold, TextAnchor.UpperLeft);
 
             _mapRect = RuntimeUiFactory.CreateUiRoot("Map", card);
-            RuntimeUiFactory.EnsureLayoutElement(_mapRect, preferredHeight: 96f);
+            RuntimeUiFactory.EnsureLayoutElement(_mapRect, preferredHeight: 118f);
             RuntimeUiFactory.AddImage(_mapRect.gameObject, new Color(0.06f, 0.09f, 0.12f, 0.96f));
             RuntimeUiFactory.AddOutline(_mapRect.gameObject, new Color(0f, 0f, 0f, 0.45f), new Vector2(1f, -1f));
             BuildGrid(_mapRect);
@@ -153,7 +153,7 @@ namespace MobilOfl.UI
             zone.offsetMin = Vector2.zero;
             zone.offsetMax = Vector2.zero;
             RuntimeUiFactory.AddImage(zone.gameObject, color).raycastTarget = false;
-            var text = RuntimeUiFactory.CreateText("Label", zone, label, 11, new Color(1f, 1f, 1f, 0.8f), FontStyle.Bold, TextAnchor.MiddleCenter);
+            var text = RuntimeUiFactory.CreateText("Label", zone, label, 13, new Color(1f, 1f, 1f, 0.85f), FontStyle.Bold, TextAnchor.MiddleCenter);
             RuntimeUiFactory.Stretch(text.rectTransform);
             text.alignment = TextAnchor.MiddleCenter;
         }
@@ -189,7 +189,7 @@ namespace MobilOfl.UI
                     continue;
                 }
 
-                DrawPoint(evidence.transform.position, evidence.MarkerColor, 8f);
+                DrawPoint(evidence.transform.position, evidence.MarkerColor, 10f);
             }
 
             var npcList = Object.FindObjectsByType<NpcInteractable>(FindObjectsInactive.Exclude);
@@ -201,7 +201,7 @@ namespace MobilOfl.UI
                     continue;
                 }
 
-                DrawPoint(npc.transform.position, npc.MarkerColor, 9f);
+                DrawPoint(npc.transform.position, npc.MarkerColor, 11f);
             }
         }
 
@@ -209,13 +209,13 @@ namespace MobilOfl.UI
         {
             _pulseTimer += Time.deltaTime;
             var pulse = 1f + Mathf.Sin(_pulseTimer * 3.5f) * 0.25f;
-            DrawPoint(playerTarget.position, ModernGuiTheme.AccentWarmColor, 11f * pulse);
+            DrawPoint(playerTarget.position, ModernGuiTheme.AccentWarmColor, 13f * pulse);
             var forward = playerTarget.forward;
             var direction = new Vector2(forward.x, forward.z).normalized;
             for (var i = 1; i <= 3; i++)
             {
                 var sampleWorld = playerTarget.position + new Vector3(direction.x, 0f, direction.y) * (1.2f * i);
-                DrawPoint(sampleWorld, new Color(1f, 0.85f, 0.35f, 0.92f - i * 0.18f), 4f);
+                DrawPoint(sampleWorld, new Color(1f, 0.85f, 0.35f, 0.92f - i * 0.18f), 5f);
             }
 
             // Draw teammates in online
@@ -232,7 +232,7 @@ namespace MobilOfl.UI
                     continue;
                 }
 
-                DrawPoint(avatars[i].transform.position, ModernGuiTheme.AccentColor, 8f);
+                DrawPoint(avatars[i].transform.position, ModernGuiTheme.AccentColor, 10f);
             }
         }
 

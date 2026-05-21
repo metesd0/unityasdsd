@@ -50,14 +50,17 @@ namespace MobilOfl.UI
         private bool _syncingFields;
 
         // --- DETECTIVE THEME COLOR PALETTE ---
-        private static readonly Color ThemeBgColor = new Color(0.035f, 0.047f, 0.078f, 0.96f); // #090C14 Deep midnight space blue
-        private static readonly Color ThemePanelColor = new Color(0.086f, 0.114f, 0.173f, 0.92f); // #161D2C Slate gray card
-        private static readonly Color ThemeBorderColor = new Color(0.18f, 0.25f, 0.37f, 0.8f); // #2E405E Muted navy border
+        private static readonly Color ThemeBgColor = new Color(0.025f, 0.035f, 0.065f, 0.97f); // Deeper midnight
+        private static readonly Color ThemePanelColor = new Color(0.065f, 0.088f, 0.14f, 0.94f); // Darker slate panel
+        private static readonly Color ThemeBorderColor = new Color(0.16f, 0.24f, 0.38f, 0.85f); // Sharper border
         private static readonly Color ThemeAccentColor = new Color(0.22f, 0.74f, 0.97f, 1f); // #38BDF8 Sky Cyan
         private static readonly Color ThemeTextColor = new Color(0.97f, 0.98f, 0.99f, 1f); // #F8FAFC Off-white
-        private static readonly Color ThemeMutedColor = new Color(0.39f, 0.45f, 0.55f, 1f); // #64748B Muted steel blue
+        private static readonly Color ThemeMutedColor = new Color(0.44f, 0.52f, 0.62f, 1f); // Slightly brighter muted
         private static readonly Color ThemeDangerColor = new Color(0.94f, 0.27f, 0.27f, 1f); // #EF4444 Crimson red
         private static readonly Color ThemeHighlightColor = new Color(0.96f, 0.62f, 0.04f, 1f); // #F59E0B Gold
+        private static readonly Color ThemeSidebarColor = new Color(0.035f, 0.048f, 0.082f, 0.98f); // Deep sidebar
+        private static readonly Color ThemeCardBgColor = new Color(0.045f, 0.062f, 0.105f, 0.92f); // Card background
+        private static readonly Color ThemeSectionCardColor = new Color(0.055f, 0.075f, 0.125f, 0.9f); // Section cards
 
         public enum MenuTab
         {
@@ -243,13 +246,16 @@ namespace MobilOfl.UI
             _windowRoot = RuntimeUiFactory.CreateUiRoot("MenuWindow", _overlayRoot);
             _windowRoot.anchorMin = Vector2.zero;
             _windowRoot.anchorMax = Vector2.one;
-            _windowRoot.offsetMin = new Vector2(50f, 50f);
-            _windowRoot.offsetMax = new Vector2(-50f, -50f);
+            _windowRoot.offsetMin = new Vector2(30f, 30f);
+            _windowRoot.offsetMax = new Vector2(-30f, -30f);
 
             // --- COLUMN 1: SIDEBAR (Left) ---
             _sidebar = RuntimeUiFactory.CreateUiRoot("Sidebar", _windowRoot);
-            AnchorSidebarAndContent(340f, 24f, true);
-            var sbVl = RuntimeUiFactory.AddVerticalLayout(_sidebar, 14f, new RectOffset(10, 10, 18, 14));
+            RuntimeUiFactory.AddImage(_sidebar.gameObject, ThemeSidebarColor);
+            RuntimeUiFactory.ApplyOneUiRounding(_sidebar.gameObject, 16f);
+            RuntimeUiFactory.AddOutline(_sidebar.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
+            AnchorSidebarAndContent(280f, 16f, true);
+            var sbVl = RuntimeUiFactory.AddVerticalLayout(_sidebar, 10f, new RectOffset(14, 14, 16, 14));
             sbVl.childForceExpandHeight = false;
 
             BuildSidebarHeader(_sidebar);
@@ -260,9 +266,9 @@ namespace MobilOfl.UI
 
             // --- COLUMN 2: CONTENT PANEL (Right) ---
             _contentHost = CreateFlatPanel("ContentHostPanel", _windowRoot, flexWidth: 1f, bgColor: ThemePanelColor);
-            AnchorSidebarAndContent(340f, 24f, true);
+            AnchorSidebarAndContent(280f, 16f, true);
             RuntimeUiFactory.AddOutline(_contentHost.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
-            var chLayout = RuntimeUiFactory.AddVerticalLayout(_contentHost, 0f, new RectOffset(24, 24, 22, 22));
+            var chLayout = RuntimeUiFactory.AddVerticalLayout(_contentHost, 0f, new RectOffset(20, 20, 18, 18));
             chLayout.childForceExpandHeight = true;
 
             BuildOpeningView(_contentHost);
@@ -272,25 +278,29 @@ namespace MobilOfl.UI
 
         private void BuildSidebarProfile(Transform parent)
         {
-            var profileCard = CreateFlatPanel("ProfileCard", parent, preferredHeight: 96f, bgColor: new Color(0f, 0f, 0f, 0.18f));
+            var profileCard = CreateFlatPanel("ProfileCard", parent, preferredHeight: 140f, bgColor: ThemeCardBgColor);
             RuntimeUiFactory.AddOutline(profileCard.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
-            var pVl = RuntimeUiFactory.AddVerticalLayout(profileCard, 8f, new RectOffset(14, 14, 14, 14));
+            var pVl = RuntimeUiFactory.AddVerticalLayout(profileCard, 6f, new RectOffset(14, 14, 12, 12));
             pVl.childForceExpandHeight = false;
 
-            CreateSleekText("AgentLabel", profileCard, "Ajan Kimliği", 11, ThemeMutedColor, FontStyle.Bold, TextAnchor.MiddleLeft);
+            CreateSleekText("AgentLabel", profileCard, "Ajan Kimliği", 12, ThemeMutedColor, FontStyle.Bold, TextAnchor.MiddleLeft);
+
+            RuntimeUiFactory.CreateSpacer("ProfileSpacer1", profileCard, 2f);
 
             var nameRow = RuntimeUiFactory.CreateUiRoot("NameRow", profileCard);
-            RuntimeUiFactory.EnsureLayoutElement(nameRow, preferredHeight: 34f);
+            RuntimeUiFactory.EnsureLayoutElement(nameRow, preferredHeight: 38f);
             var nrHl = RuntimeUiFactory.AddHorizontalLayout(nameRow, 8f, new RectOffset(0, 0, 0, 0), true);
             nrHl.childForceExpandWidth = false;
 
-            _playerNameField = RuntimeUiFactory.CreateInputField("PlayerNameField", nameRow, "Ajan adı", 13);
-            RuntimeUiFactory.EnsureLayoutElement(_playerNameField.transform, flexibleWidth: 1f, preferredHeight: 32f);
+            _playerNameField = RuntimeUiFactory.CreateInputField("PlayerNameField", nameRow, "Ajan adı", 14);
+            RuntimeUiFactory.EnsureLayoutElement(_playerNameField.transform, flexibleWidth: 1f, preferredHeight: 36f);
             var nameFieldImg = _playerNameField.GetComponent<Image>();
-            if (nameFieldImg != null) nameFieldImg.color = new Color(0f, 0f, 0f, 0.4f);
+            if (nameFieldImg != null) nameFieldImg.color = new Color(0f, 0f, 0f, 0.5f);
             var nameFieldOutline = _playerNameField.GetComponent<Outline>();
             if (nameFieldOutline != null) nameFieldOutline.effectColor = ThemeBorderColor;
             _playerNameField.onValueChanged.AddListener(OnPlayerNameChanged);
+
+            RuntimeUiFactory.CreateSpacer("ProfileSpacer2", profileCard, 4f);
 
             _overviewAgentIdText = CreateSleekText("AgentId", profileCard, "Ajan Kodu: OFL-", 11, ThemeMutedColor, FontStyle.Normal, TextAnchor.MiddleLeft);
         }
@@ -298,16 +308,16 @@ namespace MobilOfl.UI
         private void BuildSidebarHeader(Transform parent)
         {
             var header = RuntimeUiFactory.CreateUiRoot("SidebarHeader", parent);
-            RuntimeUiFactory.EnsureLayoutElement(header, preferredHeight: 92f);
-            var vl = RuntimeUiFactory.AddVerticalLayout(header, 4f, new RectOffset(0, 0, 0, 0));
+            RuntimeUiFactory.EnsureLayoutElement(header, preferredHeight: 82f);
+            var vl = RuntimeUiFactory.AddVerticalLayout(header, 3f, new RectOffset(0, 0, 0, 0));
             vl.childForceExpandHeight = false;
 
-            _titleText = CreateSleekText("Title", header, "MOBİL OFL", 30, ThemeTextColor, FontStyle.Bold, TextAnchor.UpperLeft);
-            _subtitleText = CreateSleekText("Subtitle", header, "Okul soruşturma arayüzü", 13, ThemeMutedColor, FontStyle.Normal, TextAnchor.UpperLeft);
+            _titleText = CreateSleekText("Title", header, "MOBİL OFL", 26, ThemeTextColor, FontStyle.Bold, TextAnchor.UpperLeft);
+            _subtitleText = CreateSleekText("Subtitle", header, "Okul soruşturma arayüzü", 11, ThemeMutedColor, FontStyle.Normal, TextAnchor.UpperLeft);
 
-            var badge = CreateFlatPanel("SecurityBadge", header, preferredHeight: 28f, bgColor: new Color(ThemeBorderColor.r, ThemeBorderColor.g, ThemeBorderColor.b, 0.3f));
-            RuntimeUiFactory.AddOutline(badge.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
-            RuntimeUiFactory.AddVerticalLayout(badge, 0f, new RectOffset(8, 8, 4, 4));
+            var badge = CreateFlatPanel("SecurityBadge", header, preferredHeight: 24f, bgColor: new Color(ThemeAccentColor.r, ThemeAccentColor.g, ThemeAccentColor.b, 0.08f));
+            RuntimeUiFactory.AddOutline(badge.gameObject, new Color(ThemeAccentColor.r, ThemeAccentColor.g, ThemeAccentColor.b, 0.3f), new Vector2(1f, 1f));
+            RuntimeUiFactory.AddVerticalLayout(badge, 0f, new RectOffset(8, 8, 3, 3));
             _modeBadgeText = CreateSleekText("SecurityBadgeText", badge, "Sistem hazır", 10, ThemeAccentColor, FontStyle.Bold, TextAnchor.MiddleLeft);
         }
 
@@ -315,7 +325,7 @@ namespace MobilOfl.UI
         {
             var nav = RuntimeUiFactory.CreateUiRoot("SidebarNav", parent);
             RuntimeUiFactory.EnsureLayoutElement(nav, flexibleHeight: 1f);
-            var vl = RuntimeUiFactory.AddVerticalLayout(nav, 10f, new RectOffset(0, 0, 0, 0));
+            var vl = RuntimeUiFactory.AddVerticalLayout(nav, 6f, new RectOffset(0, 0, 0, 0));
             vl.childForceExpandHeight = false;
 
             _tabPlayBtn = CreateMainActionButton("NavPlayBtn", nav, "Operasyon Merkezi", () => SwitchTab(MenuTab.Play));
@@ -325,6 +335,9 @@ namespace MobilOfl.UI
 
             var spacer = RuntimeUiFactory.CreateSpacer("NavSpacer", nav, 0f);
             RuntimeUiFactory.EnsureLayoutElement(spacer.transform, preferredHeight: 0f, flexibleHeight: 1f);
+
+            CreateSleekText("VersionLabel", nav, "Ajan Kodu: OFL Dedektif 0.2.0", 9, ThemeMutedColor, FontStyle.Normal, TextAnchor.MiddleCenter);
+            RuntimeUiFactory.CreateSpacer("NavSpacer2", nav, 4f);
 
             var exitBtn = CreateMainActionButton("NavExitBtn", nav, "Sistemi Kapat", () => {
 #if UNITY_EDITOR
@@ -373,7 +386,7 @@ namespace MobilOfl.UI
         private Button CreateMainActionButton(string name, Transform parent, string text, UnityEngine.Events.UnityAction onClick)
         {
             var btn = RuntimeUiFactory.CreateButton(name, parent, text, new Color(1f, 1f, 1f, 0.03f), 14);
-            RuntimeUiFactory.EnsureLayoutElement(btn.transform, preferredHeight: 48f);
+            RuntimeUiFactory.EnsureLayoutElement(btn.transform, preferredHeight: 54f);
 
             var rounded = btn.GetComponent<DevsDaddy.Shared.UIFramework.Core.RoundedMasks.ImageRoundedMask>();
             if (rounded != null) rounded.radius = 12f;
@@ -407,7 +420,7 @@ namespace MobilOfl.UI
                 var txt = btn.GetComponentInChildren<Text>();
                 var outline = btn.GetComponent<Outline>();
                 var accent = btn.name == "NavExitBtn" ? ThemeDangerColor : ThemeAccentColor;
-                if (img != null) img.color = new Color(accent.r, accent.g, accent.b, 0.08f);
+                if (img != null) img.color = new Color(accent.r, accent.g, accent.b, 0.12f);
                 if (txt != null) txt.color = accent;
                 if (outline != null) outline.effectColor = accent;
             });
@@ -453,7 +466,7 @@ namespace MobilOfl.UI
             var panel = RuntimeUiFactory.CreateUiRoot(name, parent);
             var bgCol = bgColor ?? ThemePanelColor;
             RuntimeUiFactory.AddImage(panel.gameObject, bgCol);
-            RuntimeUiFactory.ApplyOneUiRounding(panel.gameObject, 12f);
+            RuntimeUiFactory.ApplyOneUiRounding(panel.gameObject, 14f);
 
             var layout = panel.GetComponent<LayoutElement>();
             if (layout == null) layout = panel.gameObject.AddComponent<LayoutElement>();
@@ -503,12 +516,12 @@ namespace MobilOfl.UI
             var playVl = RuntimeUiFactory.AddVerticalLayout(_tabPlayRoot, 12f, new RectOffset(0, 0, 0, 0));
             playVl.childForceExpandHeight = false;
 
-            CreateSleekText("PlayTabTitle", _tabPlayRoot, "Operasyon Merkezi", 24, ThemeTextColor, FontStyle.Bold, TextAnchor.UpperLeft);
-            CreateSleekDivider("PlayDivider", _tabPlayRoot, 1f, -1f, ThemeBorderColor);
+            CreateSleekText("PlayTabTitle", _tabPlayRoot, "Operasyon Merkezi", 28, ThemeTextColor, FontStyle.Bold, TextAnchor.UpperLeft);
+            CreateSleekDivider("PlayDivider", _tabPlayRoot, 2f, -1f, new Color(ThemeAccentColor.r, ThemeAccentColor.g, ThemeAccentColor.b, 0.3f));
 
             var columnsContainer = RuntimeUiFactory.CreateUiRoot("PlayColumns", _tabPlayRoot);
             RuntimeUiFactory.EnsureLayoutElement(columnsContainer, flexibleHeight: 1f);
-            var colsHl = RuntimeUiFactory.AddHorizontalLayout(columnsContainer, 18f, new RectOffset(0, 0, 10, 0), true);
+            var colsHl = RuntimeUiFactory.AddHorizontalLayout(columnsContainer, 14f, new RectOffset(0, 0, 8, 0), true);
             colsHl.childForceExpandWidth = false;
 
             // --- LEFT COLUMN: TELEMETRY & CASE STATUS ---
@@ -517,32 +530,34 @@ namespace MobilOfl.UI
             var leftVl = RuntimeUiFactory.AddVerticalLayout(leftCol, 12f, new RectOffset(0, 0, 0, 0));
             leftVl.childForceExpandHeight = false;
 
-            var caseCard = CreateFlatPanel("CaseCard", leftCol, preferredHeight: 124f, bgColor: new Color(0f, 0f, 0f, 0.20f));
+            var caseCard = CreateFlatPanel("CaseCard", leftCol, preferredHeight: 160f, flexHeight: 1f, bgColor: ThemeCardBgColor);
             RuntimeUiFactory.AddOutline(caseCard.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
-            RuntimeUiFactory.AddVerticalLayout(caseCard, 10f, new RectOffset(14, 14, 14, 14));
-            CreateSleekText("ActiveCaseLabel", caseCard, "Aktif Soruşturma Dosyası", 12, ThemeMutedColor, FontStyle.Bold, TextAnchor.MiddleLeft);
-            _overviewCaseTitleText = CreateSleekText("CaseTitle", caseCard, "Yükleniyor...", 16, ThemeTextColor, FontStyle.Bold, TextAnchor.MiddleLeft);
-            _overviewCaseTargetText = CreateSleekText("CaseTarget", caseCard, "Lütfen bir operasyon modu seçin.", 13, ThemeMutedColor, FontStyle.Normal, TextAnchor.MiddleLeft);
+            RuntimeUiFactory.AddVerticalLayout(caseCard, 10f, new RectOffset(16, 16, 16, 16));
+            CreateSleekText("ActiveCaseLabel", caseCard, "Aktif Soruşturma Dosyası", 13, ThemeAccentColor, FontStyle.Bold, TextAnchor.MiddleLeft);
+            RuntimeUiFactory.CreateSpacer("CaseSpacer", caseCard, 4f);
+            _overviewCaseTitleText = CreateSleekText("CaseTitle", caseCard, "Yükleniyor...", 18, ThemeTextColor, FontStyle.Bold, TextAnchor.MiddleLeft);
+            _overviewCaseTargetText = CreateSleekText("CaseTarget", caseCard, "Lütfen bir operasyon modu seçin.", 14, ThemeMutedColor, FontStyle.Normal, TextAnchor.MiddleLeft);
 
-            var statusCard = CreateFlatPanel("StatusCard", leftCol, preferredHeight: 116f, bgColor: new Color(0f, 0f, 0f, 0.20f));
+            var statusCard = CreateFlatPanel("StatusCard", leftCol, preferredHeight: 150f, flexHeight: 1f, bgColor: ThemeCardBgColor);
             RuntimeUiFactory.AddOutline(statusCard.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
-            RuntimeUiFactory.AddVerticalLayout(statusCard, 10f, new RectOffset(14, 14, 14, 14));
-            CreateSleekText("TelemetryLabel", statusCard, "Bağlantı Durumu", 12, ThemeMutedColor, FontStyle.Bold, TextAnchor.MiddleLeft);
-            _overviewStatusText = CreateSleekText("OverviewStatus", statusCard, "Hazır", 13, ThemeTextColor, FontStyle.Normal, TextAnchor.UpperLeft);
+            RuntimeUiFactory.AddVerticalLayout(statusCard, 10f, new RectOffset(16, 16, 16, 16));
+            CreateSleekText("TelemetryLabel", statusCard, "Bağlantı Durumu", 13, ThemeAccentColor, FontStyle.Bold, TextAnchor.MiddleLeft);
+            RuntimeUiFactory.CreateSpacer("StatusSpacer", statusCard, 4f);
+            _overviewStatusText = CreateSleekText("OverviewStatus", statusCard, "Hazır", 14, ThemeTextColor, FontStyle.Normal, TextAnchor.UpperLeft);
 
             // --- RIGHT COLUMN: OPERATION CONTROLS ---
             var rightCol = RuntimeUiFactory.CreateUiRoot("RightPlayColumn", columnsContainer);
-            RuntimeUiFactory.EnsureLayoutElement(rightCol, preferredWidth: 340f, flexibleHeight: 1f);
-            var rightVl = RuntimeUiFactory.AddVerticalLayout(rightCol, 12f, new RectOffset(0, 0, 0, 0));
+            RuntimeUiFactory.EnsureLayoutElement(rightCol, preferredWidth: 380f, flexibleHeight: 1f);
+            var rightVl = RuntimeUiFactory.AddVerticalLayout(rightCol, 10f, new RectOffset(0, 0, 0, 0));
             rightVl.childForceExpandHeight = false;
 
             var soloSection = RuntimeUiFactory.CreateUiRoot("SoloSection", rightCol);
             var soloVl = RuntimeUiFactory.AddVerticalLayout(soloSection, 8f, new RectOffset(0, 0, 0, 0));
             soloVl.childForceExpandHeight = false;
 
-            CreateSleekText("SoloTitleLabel", soloSection, "Solo Operasyon", 12, ThemeAccentColor, FontStyle.Bold, TextAnchor.UpperLeft);
-            _soloButton = RuntimeUiFactory.CreateButton("SoloButton", soloSection, "Operasyonu Başlat", ThemeAccentColor, 16);
-            RuntimeUiFactory.EnsureLayoutElement(_soloButton.transform, preferredHeight: 58f);
+            CreateSleekText("SoloTitleLabel", soloSection, "Solo Operasyon", 13, ThemeAccentColor, FontStyle.Bold, TextAnchor.UpperLeft);
+            _soloButton = RuntimeUiFactory.CreateButton("SoloButton", soloSection, "Operasyonu Başlat", ThemeAccentColor, 17);
+            RuntimeUiFactory.EnsureLayoutElement(_soloButton.transform, preferredHeight: 64f);
             var soloBtnText = _soloButton.GetComponentInChildren<Text>();
             soloBtnText.color = Color.black;
             soloBtnText.fontStyle = FontStyle.Bold;
@@ -554,30 +569,30 @@ namespace MobilOfl.UI
             else RuntimeUiFactory.AddOutline(_soloButton.gameObject, new Color(ThemeAccentColor.r, ThemeAccentColor.g, ThemeAccentColor.b, 0.4f), new Vector2(1f, 1f));
             _soloButton.onClick.AddListener(() => logic?.StartSoloFromUi());
 
-            CreateSleekText("CoopTitle", rightCol, "Ekip Oyunu", 12, ThemeAccentColor, FontStyle.Bold, TextAnchor.UpperLeft);
+            CreateSleekText("CoopTitle", rightCol, "Ekip Oyunu", 13, ThemeAccentColor, FontStyle.Bold, TextAnchor.UpperLeft);
 
-            var joinCard = CreateFlatPanel("JoinCard", rightCol, preferredHeight: 104f, bgColor: new Color(0f, 0f, 0f, 0.20f));
+            var joinCard = CreateFlatPanel("JoinCard", rightCol, preferredHeight: 130f, bgColor: ThemeCardBgColor);
             RuntimeUiFactory.AddOutline(joinCard.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
-            var jcVl = RuntimeUiFactory.AddVerticalLayout(joinCard, 8f, new RectOffset(16, 16, 12, 12));
+            var jcVl = RuntimeUiFactory.AddVerticalLayout(joinCard, 8f, new RectOffset(16, 16, 14, 14));
             jcVl.childForceExpandHeight = false;
 
-            CreateSleekText("JoinDesc", joinCard, "6 haneli lobi kodu", 12, ThemeTextColor, FontStyle.Normal, TextAnchor.UpperLeft);
+            CreateSleekText("JoinDesc", joinCard, "6 haneli lobi kodu", 13, ThemeTextColor, FontStyle.Normal, TextAnchor.UpperLeft);
 
             var joinRow = RuntimeUiFactory.CreateUiRoot("JoinRow", joinCard);
-            RuntimeUiFactory.EnsureLayoutElement(joinRow, preferredHeight: 44f);
+            RuntimeUiFactory.EnsureLayoutElement(joinRow, preferredHeight: 48f);
             var jr = RuntimeUiFactory.AddHorizontalLayout(joinRow, 10f, new RectOffset(0, 0, 0, 0), false);
             jr.childForceExpandWidth = false;
 
-            _openingJoinField = RuntimeUiFactory.CreateInputField("OpeningJoinCode", joinRow, "LOBİ KODU", 13);
-            RuntimeUiFactory.EnsureLayoutElement(_openingJoinField.transform, flexibleWidth: 1f, preferredHeight: 42f);
+            _openingJoinField = RuntimeUiFactory.CreateInputField("OpeningJoinCode", joinRow, "LOBİ KODU", 14);
+            RuntimeUiFactory.EnsureLayoutElement(_openingJoinField.transform, flexibleWidth: 1f, preferredHeight: 46f);
             var joinImg = _openingJoinField.GetComponent<Image>();
             if (joinImg != null) joinImg.color = new Color(0f, 0f, 0f, 0.4f);
             var joinOutline = _openingJoinField.GetComponent<Outline>();
             if (joinOutline != null) joinOutline.effectColor = ThemeBorderColor;
             _openingJoinField.onValueChanged.AddListener(OnJoinCodeChanged);
 
-            _openingJoinButton = RuntimeUiFactory.CreateButton("JoinCodeBtn", joinRow, "Katıl", ThemeAccentColor, 12);
-            RuntimeUiFactory.EnsureLayoutElement(_openingJoinButton.transform, preferredWidth: 104f, preferredHeight: 42f);
+            _openingJoinButton = RuntimeUiFactory.CreateButton("JoinCodeBtn", joinRow, "Katıl", ThemeAccentColor, 14);
+            RuntimeUiFactory.EnsureLayoutElement(_openingJoinButton.transform, preferredWidth: 110f, preferredHeight: 46f);
             var joinBtnText = _openingJoinButton.GetComponentInChildren<Text>();
             joinBtnText.color = Color.black;
             joinBtnText.fontStyle = FontStyle.Bold;
@@ -589,9 +604,9 @@ namespace MobilOfl.UI
             else RuntimeUiFactory.AddOutline(_openingJoinButton.gameObject, new Color(ThemeAccentColor.r, ThemeAccentColor.g, ThemeAccentColor.b, 0.4f), new Vector2(1f, 1f));
             _openingJoinButton.onClick.AddListener(() => logic?.JoinCurrentCodeFromUi());
 
-            CreateSleekText("HostTitleLabel", rightCol, "Yeni Ekip Kur", 12, ThemeAccentColor, FontStyle.Bold, TextAnchor.UpperLeft);
-            _hostButton = RuntimeUiFactory.CreateButton("HostButton", rightCol, "Lobi Oluştur", new Color(1f, 1f, 1f, 0.04f), 14);
-            RuntimeUiFactory.EnsureLayoutElement(_hostButton.transform, preferredHeight: 48f);
+            CreateSleekText("HostTitleLabel", rightCol, "Yeni Ekip Kur", 13, ThemeAccentColor, FontStyle.Bold, TextAnchor.UpperLeft);
+            _hostButton = RuntimeUiFactory.CreateButton("HostButton", rightCol, "Lobi Oluştur", new Color(1f, 1f, 1f, 0.04f), 15);
+            RuntimeUiFactory.EnsureLayoutElement(_hostButton.transform, preferredHeight: 56f);
             var hostBtnText = _hostButton.GetComponentInChildren<Text>();
             hostBtnText.color = ThemeTextColor;
             hostBtnText.fontStyle = FontStyle.Bold;
@@ -603,8 +618,8 @@ namespace MobilOfl.UI
             else RuntimeUiFactory.AddOutline(_hostButton.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
             _hostButton.onClick.AddListener(() => logic?.StartHostFromUi());
 
-            _reconnectButton = RuntimeUiFactory.CreateButton("ReconnectButton", rightCol, "Önceki Oturuma Dön", new Color(1f, 1f, 1f, 0.04f), 13);
-            RuntimeUiFactory.EnsureLayoutElement(_reconnectButton.transform, preferredHeight: 48f);
+            _reconnectButton = RuntimeUiFactory.CreateButton("ReconnectButton", rightCol, "Önceki Oturuma Dön", new Color(1f, 1f, 1f, 0.04f), 14);
+            RuntimeUiFactory.EnsureLayoutElement(_reconnectButton.transform, preferredHeight: 52f);
             var recBtnText = _reconnectButton.GetComponentInChildren<Text>();
             recBtnText.color = ThemeAccentColor;
             recBtnText.fontStyle = FontStyle.Bold;
@@ -622,137 +637,148 @@ namespace MobilOfl.UI
             var casesVl = RuntimeUiFactory.AddVerticalLayout(_tabCasesRoot, 14f, new RectOffset(0, 0, 10, 10));
             casesVl.childForceExpandHeight = false;
 
-            CreateSleekText("DossierTitle", _tabCasesRoot, "Aktif Soruşturma Dosyası Raporu", 22, ThemeTextColor, FontStyle.Bold, TextAnchor.UpperLeft);
-            CreateSleekDivider("DossierDivider", _tabCasesRoot, 1f, -1f, ThemeBorderColor);
+            CreateSleekText("DossierTitle", _tabCasesRoot, "Aktif Soruşturma Dosyası Raporu", 28, ThemeTextColor, FontStyle.Bold, TextAnchor.UpperLeft);
+            CreateSleekDivider("DossierDivider", _tabCasesRoot, 2f, -1f, new Color(ThemeAccentColor.r, ThemeAccentColor.g, ThemeAccentColor.b, 0.3f));
 
-            var previewFrame = CreateFlatPanel("PreviewFrame", _tabCasesRoot, flexHeight: 1f, bgColor: ThemePanelColor);
+            var previewFrame = CreateFlatPanel("PreviewFrame", _tabCasesRoot, flexHeight: 1f, bgColor: ThemeCardBgColor);
             RuntimeUiFactory.AddOutline(previewFrame.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
-            RuntimeUiFactory.AddVerticalLayout(previewFrame, 12f, new RectOffset(16, 16, 16, 16));
+            RuntimeUiFactory.AddVerticalLayout(previewFrame, 12f, new RectOffset(18, 18, 18, 18));
 
             _casePreviewText = CreateSleekText("CasePreview", previewFrame, string.Empty, 15, ThemeTextColor, FontStyle.Normal, TextAnchor.UpperLeft);
+            _casePreviewText.supportRichText = true;
             RuntimeUiFactory.EnsureLayoutElement(_casePreviewText.transform, flexibleHeight: 1f);
 
             // TAB 3: AYARLAR GÖRÜNÜMÜ (SETTINGS TAB)
             _tabSettingsRoot = RuntimeUiFactory.CreateUiRoot("TabSettingsRoot", _openingRoot);
             RuntimeUiFactory.Stretch(_tabSettingsRoot);
-            var settingsVl = RuntimeUiFactory.AddVerticalLayout(_tabSettingsRoot, 12f, new RectOffset(0, 0, 10, 0));
+            var settingsVl = RuntimeUiFactory.AddVerticalLayout(_tabSettingsRoot, 12f, new RectOffset(0, 0, 8, 0));
             settingsVl.childForceExpandHeight = false;
 
-            CreateSleekText("SettingsTitle", _tabSettingsRoot, "Sistem Ayarları ve Hassasiyet", 22, ThemeTextColor, FontStyle.Bold, TextAnchor.UpperLeft);
-            CreateSleekDivider("SettingsDivider", _tabSettingsRoot, 1f, -1f, ThemeBorderColor);
+            CreateSleekText("SettingsTitle", _tabSettingsRoot, "Sistem Ayarları ve Hassasiyet", 28, ThemeTextColor, FontStyle.Bold, TextAnchor.UpperLeft);
+            CreateSleekDivider("SettingsDivider", _tabSettingsRoot, 2f, -1f, new Color(ThemeAccentColor.r, ThemeAccentColor.g, ThemeAccentColor.b, 0.3f));
 
-            var settingsContainer = CreateFlatPanel("SettingsContainer", _tabSettingsRoot, flexHeight: 1f, bgColor: ThemePanelColor);
-            RuntimeUiFactory.AddOutline(settingsContainer.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
-            RuntimeUiFactory.AddVerticalLayout(settingsContainer, 10f, new RectOffset(20, 20, 16, 16));
+            // --- SES AYARLARI SECTION CARD ---
+            var soundCard = CreateFlatPanel("SoundCard", _tabSettingsRoot, preferredHeight: -1f, bgColor: ThemeSectionCardColor);
+            RuntimeUiFactory.AddOutline(soundCard.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
+            var soundLayout = RuntimeUiFactory.AddVerticalLayout(soundCard, 10f, new RectOffset(18, 18, 14, 14));
+            soundLayout.childForceExpandHeight = false;
 
-            CreateSleekText("SecSoundTitle", settingsContainer, "Ses Ayarları", 12, ThemeAccentColor, FontStyle.Bold, TextAnchor.MiddleLeft);
+            CreateSleekText("SecSoundTitle", soundCard, "Ses Ayarları", 14, ThemeAccentColor, FontStyle.Bold, TextAnchor.MiddleLeft);
 
-            var volWrapper = RuntimeUiFactory.CreateUiRoot("VolWrapper", settingsContainer);
-            RuntimeUiFactory.EnsureLayoutElement(volWrapper, preferredHeight: 48f);
+            var volWrapper = RuntimeUiFactory.CreateUiRoot("VolWrapper", soundCard);
+            RuntimeUiFactory.EnsureLayoutElement(volWrapper, preferredHeight: 52f);
             var volRow = RuntimeUiFactory.AddHorizontalLayout(volWrapper, 16f, new RectOffset(0, 0, 0, 0), false);
             volRow.childForceExpandWidth = false;
 
-            _settingsVolumeText = CreateSleekText("SettingsVolumeText", volWrapper, "Müzik / Ses Efektleri  [-----|-----]  50", 13, ThemeTextColor, FontStyle.Bold, TextAnchor.MiddleLeft);
+            _settingsVolumeText = CreateSleekText("SettingsVolumeText", volWrapper, "Ses: 80%", 14, ThemeTextColor, FontStyle.Bold, TextAnchor.MiddleLeft);
             RuntimeUiFactory.EnsureLayoutElement(_settingsVolumeText.transform, flexibleWidth: 1f);
 
             var volBtns = RuntimeUiFactory.CreateUiRoot("VolBtns", volWrapper);
-            RuntimeUiFactory.EnsureLayoutElement(volBtns, preferredWidth: 176f, preferredHeight: 44f);
-            var vBr = RuntimeUiFactory.AddHorizontalLayout(volBtns, 6f, new RectOffset(0, 0, 0, 0), false);
+            RuntimeUiFactory.EnsureLayoutElement(volBtns, preferredWidth: 200f, preferredHeight: 48f);
+            var vBr = RuntimeUiFactory.AddHorizontalLayout(volBtns, 8f, new RectOffset(0, 0, 0, 0), false);
             vBr.childForceExpandWidth = true;
 
-            var volMinus = RuntimeUiFactory.CreateButton("VolMinus", volBtns, "Kıs (-)", new Color(1f, 1f, 1f, 0.04f), 12);
-            RuntimeUiFactory.EnsureLayoutElement(volMinus.transform, flexibleWidth: 1f, preferredHeight: 44f);
+            var volMinus = RuntimeUiFactory.CreateButton("VolMinus", volBtns, "Kıs (-)", new Color(1f, 1f, 1f, 0.04f), 13);
+            RuntimeUiFactory.EnsureLayoutElement(volMinus.transform, flexibleWidth: 1f, preferredHeight: 48f);
             var vmRounded = volMinus.GetComponent<DevsDaddy.Shared.UIFramework.Core.RoundedMasks.ImageRoundedMask>();
-            if (vmRounded != null) vmRounded.radius = 8f;
-            else RuntimeUiFactory.ApplyOneUiRounding(volMinus.gameObject, 8f);
+            if (vmRounded != null) vmRounded.radius = 10f;
+            else RuntimeUiFactory.ApplyOneUiRounding(volMinus.gameObject, 10f);
             var vmOutline = volMinus.GetComponent<Outline>();
             if (vmOutline != null) vmOutline.effectColor = ThemeBorderColor;
             volMinus.onClick.AddListener(() => AdjustVolume(-0.1f));
 
-            var volPlus = RuntimeUiFactory.CreateButton("VolPlus", volBtns, "Aç (+)", new Color(1f, 1f, 1f, 0.04f), 12);
-            RuntimeUiFactory.EnsureLayoutElement(volPlus.transform, flexibleWidth: 1f, preferredHeight: 44f);
+            var volPlus = RuntimeUiFactory.CreateButton("VolPlus", volBtns, "Aç (+)", new Color(1f, 1f, 1f, 0.04f), 13);
+            RuntimeUiFactory.EnsureLayoutElement(volPlus.transform, flexibleWidth: 1f, preferredHeight: 48f);
             var vpRounded = volPlus.GetComponent<DevsDaddy.Shared.UIFramework.Core.RoundedMasks.ImageRoundedMask>();
-            if (vpRounded != null) vpRounded.radius = 8f;
-            else RuntimeUiFactory.ApplyOneUiRounding(volPlus.gameObject, 8f);
+            if (vpRounded != null) vpRounded.radius = 10f;
+            else RuntimeUiFactory.ApplyOneUiRounding(volPlus.gameObject, 10f);
             var vpOutline = volPlus.GetComponent<Outline>();
             if (vpOutline != null) vpOutline.effectColor = ThemeBorderColor;
             volPlus.onClick.AddListener(() => AdjustVolume(0.1f));
 
-            CreateSleekDivider("SoundSep", settingsContainer, 1f, -1f, new Color(ThemeBorderColor.r, ThemeBorderColor.g, ThemeBorderColor.b, 0.5f));
+            // --- KONTROL HASSASİYETİ SECTION CARD ---
+            var controlCard = CreateFlatPanel("ControlCard", _tabSettingsRoot, preferredHeight: -1f, bgColor: ThemeSectionCardColor);
+            RuntimeUiFactory.AddOutline(controlCard.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
+            var controlLayout = RuntimeUiFactory.AddVerticalLayout(controlCard, 10f, new RectOffset(18, 18, 14, 14));
+            controlLayout.childForceExpandHeight = false;
 
-            CreateSleekText("SecControlsTitle", settingsContainer, "Kontrol Hassasiyeti", 12, ThemeAccentColor, FontStyle.Bold, TextAnchor.MiddleLeft);
+            CreateSleekText("SecControlsTitle", controlCard, "Kontrol Hassasiyeti", 14, ThemeAccentColor, FontStyle.Bold, TextAnchor.MiddleLeft);
 
-            var sensWrapper = RuntimeUiFactory.CreateUiRoot("SensWrapper", settingsContainer);
-            RuntimeUiFactory.EnsureLayoutElement(sensWrapper, preferredHeight: 48f);
+            var sensWrapper = RuntimeUiFactory.CreateUiRoot("SensWrapper", controlCard);
+            RuntimeUiFactory.EnsureLayoutElement(sensWrapper, preferredHeight: 52f);
             var sensRow = RuntimeUiFactory.AddHorizontalLayout(sensWrapper, 16f, new RectOffset(0, 0, 0, 0), false);
             sensRow.childForceExpandWidth = false;
 
-            _settingsSensitivityText = CreateSleekText("SettingsSensText", sensWrapper, "Bakış Hassasiyeti  [-----|-----]  2.0", 13, ThemeTextColor, FontStyle.Bold, TextAnchor.MiddleLeft);
+            _settingsSensitivityText = CreateSleekText("SettingsSensText", sensWrapper, "Bakış hassasiyeti: 2.0", 14, ThemeTextColor, FontStyle.Bold, TextAnchor.MiddleLeft);
             RuntimeUiFactory.EnsureLayoutElement(_settingsSensitivityText.transform, flexibleWidth: 1f);
 
             var sensBtns = RuntimeUiFactory.CreateUiRoot("SensBtns", sensWrapper);
-            RuntimeUiFactory.EnsureLayoutElement(sensBtns, preferredWidth: 176f, preferredHeight: 44f);
-            var sBr = RuntimeUiFactory.AddHorizontalLayout(sensBtns, 6f, new RectOffset(0, 0, 0, 0), false);
+            RuntimeUiFactory.EnsureLayoutElement(sensBtns, preferredWidth: 200f, preferredHeight: 48f);
+            var sBr = RuntimeUiFactory.AddHorizontalLayout(sensBtns, 8f, new RectOffset(0, 0, 0, 0), false);
             sBr.childForceExpandWidth = true;
 
-            var sensMinus = RuntimeUiFactory.CreateButton("SensMinus", sensBtns, "Düşür (-)", new Color(1f, 1f, 1f, 0.04f), 12);
-            RuntimeUiFactory.EnsureLayoutElement(sensMinus.transform, flexibleWidth: 1f, preferredHeight: 44f);
+            var sensMinus = RuntimeUiFactory.CreateButton("SensMinus", sensBtns, "Düşür (-)", new Color(1f, 1f, 1f, 0.04f), 13);
+            RuntimeUiFactory.EnsureLayoutElement(sensMinus.transform, flexibleWidth: 1f, preferredHeight: 48f);
             var smRounded = sensMinus.GetComponent<DevsDaddy.Shared.UIFramework.Core.RoundedMasks.ImageRoundedMask>();
-            if (smRounded != null) smRounded.radius = 8f;
-            else RuntimeUiFactory.ApplyOneUiRounding(sensMinus.gameObject, 8f);
+            if (smRounded != null) smRounded.radius = 10f;
+            else RuntimeUiFactory.ApplyOneUiRounding(sensMinus.gameObject, 10f);
             var smOutline = sensMinus.GetComponent<Outline>();
             if (smOutline != null) smOutline.effectColor = ThemeBorderColor;
             sensMinus.onClick.AddListener(() => AdjustLookSensitivity(-0.2f));
 
-            var sensPlus = RuntimeUiFactory.CreateButton("SensPlus", sensBtns, "Artır (+)", new Color(1f, 1f, 1f, 0.04f), 12);
-            RuntimeUiFactory.EnsureLayoutElement(sensPlus.transform, flexibleWidth: 1f, preferredHeight: 44f);
+            var sensPlus = RuntimeUiFactory.CreateButton("SensPlus", sensBtns, "Artır (+)", new Color(1f, 1f, 1f, 0.04f), 13);
+            RuntimeUiFactory.EnsureLayoutElement(sensPlus.transform, flexibleWidth: 1f, preferredHeight: 48f);
             var spRounded = sensPlus.GetComponent<DevsDaddy.Shared.UIFramework.Core.RoundedMasks.ImageRoundedMask>();
-            if (spRounded != null) spRounded.radius = 8f;
-            else RuntimeUiFactory.ApplyOneUiRounding(sensPlus.gameObject, 8f);
+            if (spRounded != null) spRounded.radius = 10f;
+            else RuntimeUiFactory.ApplyOneUiRounding(sensPlus.gameObject, 10f);
             var spOutline = sensPlus.GetComponent<Outline>();
             if (spOutline != null) spOutline.effectColor = ThemeBorderColor;
             sensPlus.onClick.AddListener(() => AdjustLookSensitivity(0.2f));
 
-            CreateSleekDivider("ControlsSep", settingsContainer, 1f, -1f, new Color(ThemeBorderColor.r, ThemeBorderColor.g, ThemeBorderColor.b, 0.5f));
+            // --- GRAFİK KALİTESİ SECTION CARD ---
+            var graphicsCard = CreateFlatPanel("GraphicsCard", _tabSettingsRoot, preferredHeight: -1f, bgColor: ThemeSectionCardColor);
+            RuntimeUiFactory.AddOutline(graphicsCard.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
+            var graphicsLayout = RuntimeUiFactory.AddVerticalLayout(graphicsCard, 10f, new RectOffset(18, 18, 14, 14));
+            graphicsLayout.childForceExpandHeight = false;
 
-            CreateSleekText("SecGraphicsTitle", settingsContainer, "Grafik Kalitesi", 12, ThemeAccentColor, FontStyle.Bold, TextAnchor.MiddleLeft);
+            CreateSleekText("SecGraphicsTitle", graphicsCard, "Grafik Kalitesi", 14, ThemeAccentColor, FontStyle.Bold, TextAnchor.MiddleLeft);
 
-            var qualWrapper = RuntimeUiFactory.CreateUiRoot("QualWrapper", settingsContainer);
-            RuntimeUiFactory.EnsureLayoutElement(qualWrapper, preferredHeight: 48f);
+            var qualWrapper = RuntimeUiFactory.CreateUiRoot("QualWrapper", graphicsCard);
+            RuntimeUiFactory.EnsureLayoutElement(qualWrapper, preferredHeight: 52f);
             var qualRow = RuntimeUiFactory.AddHorizontalLayout(qualWrapper, 16f, new RectOffset(0, 0, 0, 0), false);
             qualRow.childForceExpandWidth = false;
 
-            _settingsQualityText = CreateSleekText("SettingsQualityText", qualWrapper, "Grafik Kalitesi: Orta", 13, ThemeTextColor, FontStyle.Bold, TextAnchor.MiddleLeft);
+            _settingsQualityText = CreateSleekText("SettingsQualityText", qualWrapper, "Grafik Kalitesi: Orta", 14, ThemeTextColor, FontStyle.Bold, TextAnchor.MiddleLeft);
             RuntimeUiFactory.EnsureLayoutElement(_settingsQualityText.transform, flexibleWidth: 1f);
 
             var qualBtns = RuntimeUiFactory.CreateUiRoot("QualBtns", qualWrapper);
-            RuntimeUiFactory.EnsureLayoutElement(qualBtns, preferredWidth: 284f, preferredHeight: 44f);
-            var qBr = RuntimeUiFactory.AddHorizontalLayout(qualBtns, 6f, new RectOffset(0, 0, 0, 0), false);
+            RuntimeUiFactory.EnsureLayoutElement(qualBtns, preferredWidth: 320f, preferredHeight: 48f);
+            var qBr = RuntimeUiFactory.AddHorizontalLayout(qualBtns, 8f, new RectOffset(0, 0, 0, 0), false);
             qBr.childForceExpandWidth = true;
 
-            _qualityLowBtn = RuntimeUiFactory.CreateButton("QualLow", qualBtns, "Düşük", new Color(1f, 1f, 1f, 0.04f), 12);
-            RuntimeUiFactory.EnsureLayoutElement(_qualityLowBtn.transform, flexibleWidth: 1f, preferredHeight: 44f);
+            _qualityLowBtn = RuntimeUiFactory.CreateButton("QualLow", qualBtns, "Düşük", new Color(1f, 1f, 1f, 0.04f), 13);
+            RuntimeUiFactory.EnsureLayoutElement(_qualityLowBtn.transform, flexibleWidth: 1f, preferredHeight: 48f);
             var qlRounded = _qualityLowBtn.GetComponent<DevsDaddy.Shared.UIFramework.Core.RoundedMasks.ImageRoundedMask>();
-            if (qlRounded != null) qlRounded.radius = 8f;
-            else RuntimeUiFactory.ApplyOneUiRounding(_qualityLowBtn.gameObject, 8f);
+            if (qlRounded != null) qlRounded.radius = 10f;
+            else RuntimeUiFactory.ApplyOneUiRounding(_qualityLowBtn.gameObject, 10f);
             var qlOutline = _qualityLowBtn.GetComponent<Outline>();
             if (qlOutline != null) qlOutline.effectColor = ThemeBorderColor;
             _qualityLowBtn.onClick.AddListener(() => SetQuality(0));
 
-            _qualityMedBtn = RuntimeUiFactory.CreateButton("QualMed", qualBtns, "Orta", new Color(1f, 1f, 1f, 0.04f), 12);
-            RuntimeUiFactory.EnsureLayoutElement(_qualityMedBtn.transform, flexibleWidth: 1f, preferredHeight: 44f);
+            _qualityMedBtn = RuntimeUiFactory.CreateButton("QualMed", qualBtns, "Orta", new Color(1f, 1f, 1f, 0.04f), 13);
+            RuntimeUiFactory.EnsureLayoutElement(_qualityMedBtn.transform, flexibleWidth: 1f, preferredHeight: 48f);
             var qmRounded = _qualityMedBtn.GetComponent<DevsDaddy.Shared.UIFramework.Core.RoundedMasks.ImageRoundedMask>();
-            if (qmRounded != null) qmRounded.radius = 8f;
-            else RuntimeUiFactory.ApplyOneUiRounding(_qualityMedBtn.gameObject, 8f);
+            if (qmRounded != null) qmRounded.radius = 10f;
+            else RuntimeUiFactory.ApplyOneUiRounding(_qualityMedBtn.gameObject, 10f);
             var qmOutline = _qualityMedBtn.GetComponent<Outline>();
             if (qmOutline != null) qmOutline.effectColor = ThemeBorderColor;
             _qualityMedBtn.onClick.AddListener(() => SetQuality(1));
 
-            _qualityHighBtn = RuntimeUiFactory.CreateButton("QualHigh", qualBtns, "Yüksek", new Color(1f, 1f, 1f, 0.04f), 12);
-            RuntimeUiFactory.EnsureLayoutElement(_qualityHighBtn.transform, flexibleWidth: 1f, preferredHeight: 44f);
+            _qualityHighBtn = RuntimeUiFactory.CreateButton("QualHigh", qualBtns, "Yüksek", new Color(1f, 1f, 1f, 0.04f), 13);
+            RuntimeUiFactory.EnsureLayoutElement(_qualityHighBtn.transform, flexibleWidth: 1f, preferredHeight: 48f);
             var qhRounded = _qualityHighBtn.GetComponent<DevsDaddy.Shared.UIFramework.Core.RoundedMasks.ImageRoundedMask>();
-            if (qhRounded != null) qhRounded.radius = 8f;
-            else RuntimeUiFactory.ApplyOneUiRounding(_qualityHighBtn.gameObject, 8f);
+            if (qhRounded != null) qhRounded.radius = 10f;
+            else RuntimeUiFactory.ApplyOneUiRounding(_qualityHighBtn.gameObject, 10f);
             var qhOutline = _qualityHighBtn.GetComponent<Outline>();
             if (qhOutline != null) qhOutline.effectColor = ThemeBorderColor;
             _qualityHighBtn.onClick.AddListener(() => SetQuality(2));
@@ -760,13 +786,13 @@ namespace MobilOfl.UI
             // TAB 4: KÜNYE GÖRÜNÜMÜ (CREDITS TAB)
             _tabCreditsRoot = RuntimeUiFactory.CreateUiRoot("TabCreditsRoot", _openingRoot);
             RuntimeUiFactory.Stretch(_tabCreditsRoot);
-            var creditsVl = RuntimeUiFactory.AddVerticalLayout(_tabCreditsRoot, 14f, new RectOffset(0, 0, 10, 10));
+            var creditsVl = RuntimeUiFactory.AddVerticalLayout(_tabCreditsRoot, 14f, new RectOffset(0, 0, 8, 8));
             creditsVl.childForceExpandHeight = false;
 
-            CreateSleekText("CreditsTitle", _tabCreditsRoot, "Proje Künyesi ve Geliştirici Ekip", 22, ThemeTextColor, FontStyle.Bold, TextAnchor.UpperLeft);
-            CreateSleekDivider("CreditsDivider", _tabCreditsRoot, 1f, -1f, ThemeBorderColor);
+            CreateSleekText("CreditsTitle", _tabCreditsRoot, "Proje Künyesi ve Geliştirici Ekip", 28, ThemeTextColor, FontStyle.Bold, TextAnchor.UpperLeft);
+            CreateSleekDivider("CreditsDivider", _tabCreditsRoot, 2f, -1f, new Color(ThemeAccentColor.r, ThemeAccentColor.g, ThemeAccentColor.b, 0.3f));
 
-            var creditsFrame = CreateFlatPanel("CreditsFrame", _tabCreditsRoot, flexHeight: 1f, bgColor: ThemePanelColor);
+            var creditsFrame = CreateFlatPanel("CreditsFrame", _tabCreditsRoot, flexHeight: 1f, bgColor: ThemeCardBgColor);
             RuntimeUiFactory.AddOutline(creditsFrame.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
             RuntimeUiFactory.AddVerticalLayout(creditsFrame, 12f, new RectOffset(20, 20, 20, 20));
 
@@ -871,19 +897,6 @@ namespace MobilOfl.UI
             if (clRounded != null) clRounded.radius = 12f;
             else RuntimeUiFactory.ApplyOneUiRounding(_closeButton.gameObject, 12f);
             _closeButton.onClick.AddListener(() => logic?.CloseMenu());
-
-            var notebookButton = RuntimeUiFactory.CreateButton("NotebookButton", actions, "VAKA DOSYASINI AÇ", new Color(1f, 1f, 1f, 0.04f), 14);
-            RuntimeUiFactory.EnsureLayoutElement(notebookButton.transform, preferredHeight: 46f);
-            var ntText = notebookButton.GetComponentInChildren<Text>();
-            ntText.color = ThemeTextColor;
-            ntText.fontStyle = FontStyle.Bold;
-            var ntRounded = notebookButton.GetComponent<DevsDaddy.Shared.UIFramework.Core.RoundedMasks.ImageRoundedMask>();
-            if (ntRounded != null) ntRounded.radius = 10f;
-            else RuntimeUiFactory.ApplyOneUiRounding(notebookButton.gameObject, 10f);
-            var ntOutline = notebookButton.GetComponent<Outline>();
-            if (ntOutline != null) ntOutline.effectColor = ThemeBorderColor;
-            else RuntimeUiFactory.AddOutline(notebookButton.gameObject, ThemeBorderColor, new Vector2(1f, 1f));
-            notebookButton.onClick.AddListener(OpenNotebookFromPause);
 
             var newSoloButton = RuntimeUiFactory.CreateButton("NewSoloButton", actions, "YENİ YEREL DOSYA BAŞLAT", new Color(1f, 1f, 1f, 0.04f), 14);
             RuntimeUiFactory.EnsureLayoutElement(newSoloButton.transform, preferredHeight: 46f);
@@ -1355,8 +1368,7 @@ namespace MobilOfl.UI
 
         private void OpenNotebookFromPause()
         {
-            logic?.CloseMenu();
-            CaseNotebookHud.Instance?.OpenNotebook();
+            CaseNotebookHud.Instance?.CloseNotebook();
         }
 
         private void ShutdownSession()
@@ -1477,13 +1489,13 @@ namespace MobilOfl.UI
             _windowRoot.anchorMin = Vector2.zero;
             _windowRoot.anchorMax = Vector2.one;
 
-            var margin = mobileLayout ? 24f : 50f;
+            var margin = mobileLayout ? 18f : 30f;
             _windowRoot.offsetMin = new Vector2(margin, margin);
             _windowRoot.offsetMax = new Vector2(-margin, -margin);
 
             var showSidebar = logic.CurrentMenuMode == MainMenuHud.RuntimeMenuMode.Opening;
-            var sidebarWidth = mobileLayout ? 300f : 340f;
-            var gap = mobileLayout ? 18f : 24f;
+            var sidebarWidth = mobileLayout ? 240f : 280f;
+            var gap = mobileLayout ? 12f : 16f;
             AnchorSidebarAndContent(sidebarWidth, gap, showSidebar);
         }
 
@@ -1495,12 +1507,13 @@ namespace MobilOfl.UI
             }
 
             var target = visible ? 1f : 0f;
-            _openBlend = Mathf.MoveTowards(_openBlend, target, Time.unscaledDeltaTime * 5.5f);
-            _overlayGroup.alpha = _openBlend;
+            var deltaTime = Time.unscaledDeltaTime > 0f ? Time.unscaledDeltaTime : 1f / 60f;
+            _openBlend = Mathf.MoveTowards(_openBlend, target, deltaTime * 4.0f);
+            _overlayGroup.alpha = Mathf.SmoothStep(0f, 1f, _openBlend);
             _overlayGroup.interactable = _openBlend > 0.98f;
             _overlayGroup.blocksRaycasts = _openBlend > 0.02f;
-            _windowRoot.localScale = Vector3.Lerp(new Vector3(0.97f, 0.99f, 1f), Vector3.one, _openBlend);
-            _windowRoot.anchoredPosition = Vector2.Lerp(new Vector2(0f, 24f), Vector2.zero, _openBlend);
+            _windowRoot.localScale = Vector3.Lerp(new Vector3(0.96f, 0.98f, 1f), Vector3.one, _openBlend);
+            _windowRoot.anchoredPosition = Vector2.Lerp(new Vector2(0f, 20f), Vector2.zero, _openBlend);
         }
 
         private static string BuildModeBadge(MainMenuHud.RuntimeMenuMode mode, RelayNetworkBootstrap bootstrap, NetworkCaseState networkCaseState)

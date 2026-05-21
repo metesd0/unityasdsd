@@ -104,6 +104,11 @@ namespace MobilOfl.Gameplay
             return true;
         }
 
+        public void SetMobileButton(MobileButton button)
+        {
+            mobileScanButton = button;
+        }
+
         private string BuildScanSummary()
         {
             ResolveReferences();

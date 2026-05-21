@@ -1,0 +1,11 @@
+Model Information:
+* title:	Low Poly Book Shelf
+* source:	https://sketchfab.com/3d-models/low-poly-book-shelf-9f9e0e532a5846c1acc252fcf664813b
+* author:	StaticBuffering (https://sketchfab.com/StaticBuffering)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Low Poly Book Shelf" (https://sketchfab.com/3d-models/low-poly-book-shelf-9f9e0e532a5846c1acc252fcf664813b) by StaticBuffering (https://sketchfab.com/StaticBuffering) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

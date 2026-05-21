@@ -7,10 +7,11 @@ namespace MobilOfl.UI
     public class UguiReticleHud : MonoBehaviour
     {
         [SerializeField] private PlayerInteractionController playerInteraction;
-        [SerializeField] private float size = 18f;
+        [SerializeField] private float size = 7f;
 
         private RectTransform _root;
-        private Image[] _reticleLines;
+        private Image _centerDot;
+        private Image[] _reticleTicks;
         private Text _promptText;
         private CanvasGroup _promptGroup;
         private Image _holdFill;
@@ -77,23 +78,26 @@ namespace MobilOfl.UI
             center.pivot = new Vector2(0.5f, 0.5f);
             center.sizeDelta = new Vector2(1f, 1f);
 
-            _reticleLines = new Image[4];
-            _reticleLines[0] = CreateLine(center, "Left", new Vector2(-size - 12f, 0f), new Vector2(size, 2f));
-            _reticleLines[1] = CreateLine(center, "Right", new Vector2(12f, 0f), new Vector2(size, 2f));
-            _reticleLines[2] = CreateLine(center, "Top", new Vector2(0f, size + 12f), new Vector2(2f, size));
-            _reticleLines[3] = CreateLine(center, "Bottom", new Vector2(0f, -12f), new Vector2(2f, size));
+            _centerDot = CreateLine(center, "Dot", Vector2.zero, new Vector2(5f, 5f));
+            RuntimeUiFactory.ApplyOneUiRounding(_centerDot.gameObject, 2.5f);
+
+            _reticleTicks = new Image[4];
+            _reticleTicks[0] = CreateLine(center, "LeftTick", new Vector2(-12f, 0f), new Vector2(size, 2f));
+            _reticleTicks[1] = CreateLine(center, "RightTick", new Vector2(12f, 0f), new Vector2(size, 2f));
+            _reticleTicks[2] = CreateLine(center, "TopTick", new Vector2(0f, 12f), new Vector2(2f, size));
+            _reticleTicks[3] = CreateLine(center, "BottomTick", new Vector2(0f, -12f), new Vector2(2f, size));
 
             var promptCard = RuntimeUiFactory.CreateCard("PromptCard", _root, new Color(0.07f, 0.09f, 0.12f, 0.96f), ModernGuiTheme.AccentColor);
             promptCard.anchorMin = new Vector2(0.5f, 0.5f);
             promptCard.anchorMax = new Vector2(0.5f, 0.5f);
             promptCard.pivot = new Vector2(0.5f, 0f);
-            promptCard.anchoredPosition = new Vector2(0f, -84f);
-            promptCard.sizeDelta = new Vector2(360f, 54f);
-            RuntimeUiFactory.AddVerticalLayout(promptCard, 0f, new RectOffset(12, 12, 12, 10));
-            _promptText = RuntimeUiFactory.CreateText("PromptText", promptCard, string.Empty, 17, ModernGuiTheme.TextColor, FontStyle.Bold, TextAnchor.MiddleCenter);
+            promptCard.anchoredPosition = new Vector2(0f, -90f);
+            promptCard.sizeDelta = new Vector2(400f, 62f);
+            RuntimeUiFactory.AddVerticalLayout(promptCard, 0f, new RectOffset(16, 16, 14, 12));
+            _promptText = RuntimeUiFactory.CreateText("PromptText", promptCard, string.Empty, 19, ModernGuiTheme.TextColor, FontStyle.Bold, TextAnchor.MiddleCenter);
             _promptText.alignment = TextAnchor.MiddleCenter;
             var holdShell = RuntimeUiFactory.CreateUiRoot("HoldShell", promptCard);
-            RuntimeUiFactory.EnsureLayoutElement(holdShell, preferredHeight: 10f);
+            RuntimeUiFactory.EnsureLayoutElement(holdShell, preferredHeight: 12f);
             RuntimeUiFactory.AddImage(holdShell.gameObject, new Color(0.08f, 0.1f, 0.13f, 1f));
             RuntimeUiFactory.AddOutline(holdShell.gameObject, new Color(0f, 0f, 0f, 0.3f), new Vector2(1f, -1f));
             _holdFill = RuntimeUiFactory.CreateUiRoot("Fill", holdShell).gameObject.AddComponent<Image>();
@@ -142,11 +146,16 @@ namespace MobilOfl.UI
             var scanPulse = InvestigationScanner.IsScanActive
                 ? 0.45f + Mathf.PingPong(Time.unscaledTime * 1.8f, 0.35f)
                 : 0f;
-            var idleColor = Color.Lerp(new Color(1f, 1f, 1f, 0.55f), new Color(0.24f, 0.96f, 0.86f, 0.9f), scanPulse);
+            var idleColor = Color.Lerp(new Color(1f, 1f, 1f, 0.42f), new Color(0.24f, 0.96f, 0.86f, 0.86f), scanPulse);
             var color = hasTarget ? new Color(0.2f, 0.95f, 0.65f, 0.95f) : idleColor;
-            for (var i = 0; i < _reticleLines.Length; i++)
+            if (_centerDot != null)
             {
-                _reticleLines[i].color = color;
+                _centerDot.color = hasTarget ? color : new Color(1f, 1f, 1f, 0.62f);
+            }
+
+            for (var i = 0; i < _reticleTicks.Length; i++)
+            {
+                _reticleTicks[i].color = hasTarget ? color : new Color(color.r, color.g, color.b, 0.24f);
             }
 
             var showPrompt = hasTarget;

@@ -12,6 +12,14 @@ namespace MobilOfl.UI
         public static readonly Color TextColor = new Color(0.96f, 0.98f, 1f, 1f);
         public static readonly Color MutedTextColor = new Color(0.66f, 0.74f, 0.82f, 1f);
 
+        // Sidebar & Card extra
+        public static readonly Color SidebarColor = new Color(0.04f, 0.055f, 0.09f, 0.96f);
+        public static readonly Color CardHoverColor = new Color(0.12f, 0.16f, 0.22f, 0.9f);
+        public static readonly Color SectionHeaderColor = new Color(0.22f, 0.74f, 0.97f, 0.85f);
+        public static readonly Color InputBgColor = new Color(0.06f, 0.08f, 0.11f, 0.96f);
+        public static readonly Color ProgressTrackColor = new Color(0.08f, 0.10f, 0.14f, 1f);
+        public static readonly Color ProgressFillColor = new Color(0.22f, 0.74f, 0.97f, 0.9f);
+
         // Stamina & Health
         public static readonly Color StaminaColor = new Color(0.22f, 0.82f, 0.55f, 1f);
         public static readonly Color StaminaLowColor = new Color(0.92f, 0.36f, 0.22f, 1f);
@@ -83,14 +91,14 @@ namespace MobilOfl.UI
             };
         }
 
-        public static GUIStyle CreateButtonStyle(int fontSize = 15)
+        public static GUIStyle CreateButtonStyle(int fontSize = 16)
         {
             return new GUIStyle(GUI.skin.button)
             {
                 fontSize = fontSize,
                 fontStyle = FontStyle.Bold,
                 fixedHeight = 0f,
-                padding = new RectOffset(12, 12, 10, 10),
+                padding = new RectOffset(16, 16, 12, 12),
                 margin = new RectOffset(2, 2, 2, 2),
                 normal = { background = ButtonTexture, textColor = TextColor },
                 hover = { background = ButtonActiveTexture, textColor = TextColor },
@@ -98,12 +106,12 @@ namespace MobilOfl.UI
             };
         }
 
-        public static GUIStyle CreateTextFieldStyle(int fontSize = 15)
+        public static GUIStyle CreateTextFieldStyle(int fontSize = 16)
         {
             return new GUIStyle(GUI.skin.textField)
             {
                 fontSize = fontSize,
-                padding = new RectOffset(12, 12, 10, 10),
+                padding = new RectOffset(14, 14, 12, 12),
                 margin = new RectOffset(2, 2, 2, 2),
                 normal = { background = InputTexture, textColor = TextColor },
                 focused = { background = InputTexture, textColor = TextColor }

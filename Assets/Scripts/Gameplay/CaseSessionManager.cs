@@ -108,6 +108,26 @@ namespace MobilOfl.Gameplay
             SetActiveCase(activeCase);
         }
 
+        private void OnEnable()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else if (Instance != this)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
+                Instance = null;
+            }
+        }
+
         public void SetActiveCase(CaseDefinition caseDefinition)
         {
             if (caseDefinition == null)
@@ -184,6 +204,7 @@ namespace MobilOfl.Gameplay
             RegisterProgress();
             PublishMessage($"Delil toplandi: {evidence.Title}");
             EvaluateInferences();
+            TryResolveCaseAutomatically(evidenceId);
             return true;
         }
 
@@ -213,6 +234,7 @@ namespace MobilOfl.Gameplay
             }
 
             EvaluateInferences();
+            TryResolveCaseAutomatically(evidenceId);
             return true;
         }
 
@@ -642,9 +664,9 @@ namespace MobilOfl.Gameplay
                 return "Kutuphane masasini tara; not kagidi ilk fiziksel izi verecek.";
             }
 
-            if (!HasEvidence("evidence.guard-testimony"))
+            if (!HasEvidence("evidence.library-alibi"))
             {
-                return "Guvenlik gorevlisine geri don. Kamera kaydi yeni ifade acacak.";
+                return "Bilisim kulubundeki okul ag oturum kaydini bul. Supheli duran ogrencinin mazereti orada netlesecek.";
             }
 
             if (!HasEvidence("evidence.student-testimony"))
@@ -652,19 +674,24 @@ namespace MobilOfl.Gameplay
                 return "Kutuphane ogrencisiyle tekrar konus; notun kaynagi netlesecek.";
             }
 
+            if (!HasEvidence("evidence.canteen-receipt"))
+            {
+                return "Kantin kasasindaki fislere bak. Ilk ifade bilerek yanlis yonlendirme olabilir.";
+            }
+
+            if (!HasEvidence("evidence.canteen-testimony"))
+            {
+                return "Kantin calisaniyla fis uzerinden tekrar konus. Yalan ifade burada kirilacak.";
+            }
+
             if (!HasTool("tool.archive-pass"))
             {
-                return "Ogretmenler odasina gec ve arsiv gecis kartini al. Arsiv raflari bu kart olmadan acilmaz.";
+                return "Kantin ifadesinden sonra arsiv gecis kartini al. Arsiv raflari bu kart olmadan acilmaz.";
             }
 
             if (!HasEvidence("evidence.archive-ledger"))
             {
                 return "Arsiv gecis kartini kullanip arsiv kanadina gir. Gizli kutuyu arayip giris defterini ortaya cikar.";
-            }
-
-            if (!HasEvidence("evidence.canteen-testimony"))
-            {
-                return "Kantin calisaniyla konus. Gec saat hareketi burada teyit edilecek.";
             }
 
             if (!HasTool("tool.lockpick"))
@@ -677,10 +704,20 @@ namespace MobilOfl.Gameplay
                 return "Maymuncuk setiyle ogretmenler odasindaki cekmeceyi ara; yedek anahtar erisim zincirini tamamlayacak.";
             }
 
+            if (!HasEvidence("evidence.security-drawer-note"))
+            {
+                return "Guvenlik odasindaki kilitli cekmeceyi maymuncukla ac. Nobet notu son zaman boslugunu kapatacak.";
+            }
+
+            if (!HasEvidence("evidence.guard-testimony"))
+            {
+                return "Guvenlik gorevlisine nobet notuyla geri don. Kamera kaydi artik net ifade acacak.";
+            }
+
             var readySuspect = activeCase.Suspects.FirstOrDefault(item => item != null && CanAccuse(item.Id));
             if (readySuspect != null)
             {
-                return $"{readySuspect.DisplayName} icin yeterli delil var. Notebook'ta Supheliler sekmesinden suclama yapabilirsin.";
+                return $"{readySuspect.DisplayName} icin yeterli delil var. Guvenlik gorevlisinin son ifadesiyle vaka kapanacak.";
             }
 
             return "Suphelilerin eksik delillerini dosyada karsilastir ve son ipuclarini topla.";
@@ -722,7 +759,7 @@ namespace MobilOfl.Gameplay
 
         public bool TryResolveCase(string suspectId, out string resultMessage)
         {
-            resultMessage = "Final karar icin supheliyle birlikte motivasyon ve zaman cizelgesi de secilmeli.";
+            resultMessage = "Final karar icin supheliyle birlikte motivasyon ve olay sirasi da secilmeli.";
             PublishMessage(resultMessage);
             CaseResolved?.Invoke(false, resultMessage);
             return false;
@@ -777,7 +814,7 @@ namespace MobilOfl.Gameplay
             }
             else if (!correctMotive && !correctTimeline)
             {
-                resultMessage = "Supheli dogru olabilir, ama motivasyon ve zaman cizelgesi kanitlarla uyusmuyor.";
+                resultMessage = "Supheli dogru olabilir, ama motivasyon ve olay sirasi kanitlarla uyusmuyor.";
             }
             else if (!correctMotive)
             {
@@ -785,7 +822,7 @@ namespace MobilOfl.Gameplay
             }
             else
             {
-                resultMessage = "Supheli dogru olabilir, ama zaman cizelgesi kanitlarla uyusmuyor.";
+                resultMessage = "Supheli dogru olabilir, ama olay sirasi kanitlarla uyusmuyor.";
             }
 
             PublishMessage(resultMessage);
@@ -825,6 +862,11 @@ namespace MobilOfl.Gameplay
                 segments.Add("Kutuphanedeki not, soru sizintisinin fiziksel olarak elde dolastigini gosteriyor.");
             }
 
+            if (HasEvidence("evidence.library-alibi"))
+            {
+                segments.Add("Kutuphane oturum kaydi, kutuphanedeki supheli ogrencinin olay aninda yanlis hedef oldugunu gosteriyor.");
+            }
+
             if (HasEvidence("evidence.student-testimony"))
             {
                 segments.Add("Kutuphane tanigi notu dogrudan bilisim kulubu ogrencisine bagliyor.");
@@ -845,9 +887,19 @@ namespace MobilOfl.Gameplay
                 segments.Add("Kantin ifadesi, olay saatine yakin hizli ve amacli hareket zincirini tamamliyor.");
             }
 
+            if (HasEvidence("evidence.canteen-receipt"))
+            {
+                segments.Add("Kantin fisi, ilk anlatilan hikayede saat ve urun tutarsizligi oldugunu aciga cikariyor.");
+            }
+
             if (HasEvidence("evidence.locker-key"))
             {
                 segments.Add("Yedek anahtar, soru dolabina fiziksel erisimin nasil saglandigini acikliyor.");
+            }
+
+            if (HasEvidence("evidence.security-drawer-note"))
+            {
+                segments.Add("Guvenlik cekmecesi notu, kamera kaydindaki boslugu ve nobet degisimini dogruluyor.");
             }
 
             if (HasTool("tool.archive-pass"))
@@ -878,6 +930,33 @@ namespace MobilOfl.Gameplay
             return string.Join(" ", segments);
         }
 
+        private void TryResolveCaseAutomatically(string latestEvidenceId)
+        {
+            if (activeCase == null || IsCaseResolved || latestEvidenceId != "evidence.guard-testimony")
+            {
+                return;
+            }
+
+            if (!CanAccuse(activeCase.CulpritSuspectId))
+            {
+                return;
+            }
+
+            var suspect = activeCase.Suspects.FirstOrDefault(item => item != null && item.Id == activeCase.CulpritSuspectId);
+            var suspectName = suspect != null ? suspect.DisplayName : "Bilisim Kulubu Ogrencisi";
+            var resultMessage =
+                "Vaka cozuldu.\n" +
+                $"Suclu: {suspectName}\n" +
+                $"Motivasyon: {activeCase.CulpritMotive}\n" +
+                $"Olay sirasi: {activeCase.CulpritTimeline}";
+
+            IsCaseResolved = true;
+            _lastResultMessage = resultMessage;
+            RegisterProgress();
+            PublishMessage(resultMessage);
+            CaseResolved?.Invoke(true, resultMessage);
+        }
+
         private void RegisterProgress()
         {
             _lastProgressAt = Time.time;
@@ -893,8 +972,10 @@ namespace MobilOfl.Gameplay
 
             AddInferenceIf(
                 "inference.note-owner",
-                HasEvidence("evidence.answer-key-note") && HasEvidence("evidence.student-testimony"),
-                "Kutuphanedeki not bilisim kulubu ogrencisinin defteriyle baglaniyor.",
+                HasEvidence("evidence.answer-key-note") &&
+                HasEvidence("evidence.student-testimony") &&
+                HasEvidence("evidence.library-alibi"),
+                "Kutuphanedeki not bilisim kulubu ogrencisinin defteriyle baglaniyor; kutuphane ogrencisi yanlis hedef olmaktan cikiyor.",
                 publishMessages);
 
             AddInferenceIf(
@@ -912,9 +993,11 @@ namespace MobilOfl.Gameplay
             AddInferenceIf(
                 "inference.motive-window",
                 HasEvidence("evidence.canteen-testimony") &&
+                HasEvidence("evidence.canteen-receipt") &&
                 HasEvidence("evidence.archive-ledger") &&
+                HasEvidence("evidence.security-drawer-note") &&
                 HasEvidence("evidence.security-log"),
-                "Kantin ifadesi, arsiv defteri ve kamera kaydi olay saatine yakin hareket zincirini tamamliyor.",
+                "Kantin fisi, ifade, arsiv defteri, nobet notu ve kamera kaydi olay saatine yakin hareket zincirini tamamliyor.",
                 publishMessages);
         }
 

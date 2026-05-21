@@ -216,33 +216,39 @@ namespace MobilOfl.Gameplay
             return string.IsNullOrWhiteSpace(npcId) ||
                    npcId == "npc.default" ||
                    npcDisplayName == "NPC" ||
-                   string.IsNullOrWhiteSpace(requiredEvidenceId) ||
                    string.Equals(defaultLine, "Simdi konusamam.", System.StringComparison.OrdinalIgnoreCase) ||
                    string.Equals(evidenceLine, "Bunu soylemem gerekiyordu.", System.StringComparison.OrdinalIgnoreCase);
         }
 
         private NpcDialogueProfile ResolveFallbackProfile()
         {
-            var npcs = Object.FindObjectsByType<NpcInteractable>(FindObjectsInactive.Include);
-            System.Array.Sort(npcs, (left, right) =>
+            var key = (name + " " + npcDisplayName + " " + npcId).ToLowerInvariant();
+            if (key.Contains("guvenlik") || key.Contains("gorevlisi") || key.Contains("guard") || key.Contains("npc_01"))
             {
-                var leftKey = left == null ? float.MaxValue : left.transform.position.x * 1000f + left.transform.position.z;
-                var rightKey = right == null ? float.MaxValue : right.transform.position.x * 1000f + right.transform.position.z;
-                return leftKey.CompareTo(rightKey);
-            });
-
-            var index = 0;
-            for (var i = 0; i < npcs.Length; i++)
-            {
-                if (npcs[i] == this)
-                {
-                    index = i;
-                    break;
-                }
+                return FallbackProfiles[0];
             }
 
-            var profiles = FallbackProfiles;
-            return profiles[Mathf.Clamp(index, 0, profiles.Length - 1)];
+            if (key.Contains("arsiv") || key.Contains("archive") || key.Contains("npc_05"))
+            {
+                return FallbackProfiles[1];
+            }
+
+            if (key.Contains("kutuphane") || key.Contains("library") || key.Contains("npc_02"))
+            {
+                return FallbackProfiles[2];
+            }
+
+            if (key.Contains("ogretmen") || key.Contains("teacher") || key.Contains("npc_04"))
+            {
+                return FallbackProfiles[3];
+            }
+
+            if (key.Contains("kantin") || key.Contains("canteen") || key.Contains("npc_03"))
+            {
+                return FallbackProfiles[4];
+            }
+
+            return FallbackProfiles[0];
         }
 
         private static readonly NpcDialogueProfile[] FallbackProfiles =
@@ -250,9 +256,9 @@ namespace MobilOfl.Gameplay
             new NpcDialogueProfile(
                 "npc.guard",
                 "Guvenlik Gorevlisi",
-                "Kayitlari gormeden kimseyi suclayamam.",
-                "Kamera kaydini bulduysan soyleyebilirim: gece 22:15'te bilisim kulubu ogrencisi laboratuvar koridorundaydi.",
-                "evidence.security-log",
+                "Nobet notunu gormeden kamera boslugunu net anlatamam.",
+                "Nobet notu kamera boslugunu dogruluyor. Gece 22:15'te bilisim kulubu ogrencisi laboratuvar koridorundaydi.",
+                "evidence.security-drawer-note",
                 "evidence.guard-testimony",
                 new Color(0.96f, 0.68f, 0.24f, 1f)),
             new NpcDialogueProfile(
@@ -266,9 +272,9 @@ namespace MobilOfl.Gameplay
             new NpcDialogueProfile(
                 "npc.library-student",
                 "Kutuphane Ogrencisi",
-                "O notun kime ait oldugunu bilmiyorum.",
-                "Cevap anahtari notunu gordum. Bilisim kulubu ogrencisinin defterinden dustu.",
-                "evidence.answer-key-note",
+                "Ben de supheli gorundugumu biliyorum ama o saatte bilgisayar rezervasyonum vardi.",
+                "Oturum kaydina baktiniz mi? Ben 21:50-22:30 arasi kutuphanedeydim. Not bilisim kulubu ogrencisinin defterinden dustu.",
+                "evidence.library-alibi",
                 "evidence.student-testimony",
                 new Color(0.25f, 0.82f, 1f, 1f)),
             new NpcDialogueProfile(
@@ -282,9 +288,9 @@ namespace MobilOfl.Gameplay
             new NpcDialogueProfile(
                 "npc.canteen-worker",
                 "Kantin Calisani",
-                "Gec saatte kim geldigini hatirlamiyorum.",
-                "Simdi hatirladim; o nottan sonra ayni ogrenci gece enerji icecegi alip laboratuvar tarafina kostu.",
-                "evidence.answer-key-note",
+                "Gece gelen tek kisi ogretmen yardimcisiydi, baska birini gormedim.",
+                "Tamam, fis saatini yanlis soyledim. Bilisim kulubu ogrencisi enerji icecegi alip laboratuvar tarafina kostu.",
+                "evidence.canteen-receipt",
                 "evidence.canteen-testimony",
                 new Color(0.32f, 0.9f, 0.58f, 1f))
         };

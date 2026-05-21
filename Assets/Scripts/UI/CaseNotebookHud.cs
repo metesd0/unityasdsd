@@ -60,8 +60,21 @@ namespace MobilOfl.UI
         private void Awake()
         {
             Instance = this;
-            _isOpen = startOpen;
-            IsAnyNotebookOpen = _isOpen;
+            _isOpen = false;
+            IsAnyNotebookOpen = false;
+        }
+
+        private void OnEnable()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+                IsAnyNotebookOpen = _isOpen;
+            }
+            else if (Instance != this)
+            {
+                Destroy(gameObject);
+            }
         }
 
         private void OnDisable()
@@ -73,6 +86,14 @@ namespace MobilOfl.UI
 
             if (Instance == this)
             {
+                IsAnyNotebookOpen = false;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+            {
                 Instance = null;
                 IsAnyNotebookOpen = false;
             }
@@ -80,33 +101,20 @@ namespace MobilOfl.UI
 
         private void Update()
         {
-            if (MainMenuHud.IsBlockingGameplay)
+            if (_isOpen || IsAnyNotebookOpen)
             {
-                return;
-            }
-
-            var keyboardPressed = Keyboard.current != null && Keyboard.current[toggleKey].wasPressedThisFrame;
-            var mobilePressed = toggleButton != null && toggleButton.ConsumeWasPressedThisFrame();
-
-            if (keyboardPressed || mobilePressed)
-            {
-                _isOpen = !_isOpen;
-                IsAnyNotebookOpen = _isOpen;
+                CloseNotebook();
             }
         }
 
         public void OpenNotebook()
         {
-            _isOpen = true;
-            _selectedTab = NotebookTab.Overview;
-            IsAnyNotebookOpen = true;
+            CloseNotebook();
         }
 
         public void OpenSuspectsNotebook()
         {
-            _isOpen = true;
-            _selectedTab = NotebookTab.Suspects;
-            IsAnyNotebookOpen = true;
+            CloseNotebook();
         }
 
         public void CloseNotebook()
@@ -118,6 +126,11 @@ namespace MobilOfl.UI
         public void SetTabIndex(int tabIndex)
         {
             _selectedTab = (NotebookTab)Mathf.Clamp(tabIndex, 0, 4);
+        }
+
+        public void SetToggleButton(MobileButton button)
+        {
+            toggleButton = button;
         }
 
         private void OnGUI()
@@ -547,7 +560,7 @@ namespace MobilOfl.UI
 
             DrawChoiceButtons("Motivasyon", session.ActiveCase.MotiveOptions, session.ActiveCase.CulpritMotive, ref _selectedMotive);
             GUILayout.Space(6f);
-            DrawChoiceButtons("Zaman Cizelgesi", session.ActiveCase.TimelineOptions, session.ActiveCase.CulpritTimeline, ref _selectedTimeline);
+            DrawChoiceButtons("Olay Sirasi", session.ActiveCase.TimelineOptions, session.ActiveCase.CulpritTimeline, ref _selectedTimeline);
 
             GUILayout.EndVertical();
         }

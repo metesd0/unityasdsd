@@ -19,7 +19,7 @@ namespace MobilOfl.Case
         [SerializeField] private List<SuspectData> suspects = new List<SuspectData>();
         [SerializeField] private string culpritSuspectId;
         [SerializeField] [TextArea] private string culpritMotive = "Motivasyon";
-        [SerializeField] [TextArea] private string culpritTimeline = "Zaman cizelgesi";
+        [SerializeField] [TextArea] private string culpritTimeline = "Olay sirasi";
         [SerializeField] private List<string> motiveOptions = new List<string>();
         [SerializeField] private List<string> timelineOptions = new List<string>();
 

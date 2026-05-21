@@ -219,9 +219,9 @@ namespace MobilOfl.UI
         {
             var rect = CreateUiRoot(name, parent);
             var image = AddImage(rect.gameObject, backgroundColor);
-            ApplyOneUiRounding(rect.gameObject, 12f);
+            ApplyOneUiRounding(rect.gameObject, 14f);
             AddOutline(rect.gameObject, new Color(0f, 0f, 0f, 0.6f), new Vector2(1f, -1f));
-            AddShadow(rect.gameObject, new Color(0f, 0f, 0f, 0.32f), new Vector2(0f, -3f));
+            AddShadow(rect.gameObject, new Color(0f, 0f, 0f, 0.38f), new Vector2(0f, -4f));
 
             var button = rect.gameObject.AddComponent<Button>();
             button.targetGraphic = image;
@@ -243,14 +243,14 @@ namespace MobilOfl.UI
         public static InputField CreateInputField(string name, Transform parent, string placeholderText, int fontSize = 18)
         {
             var rect = CreateUiRoot(name, parent);
-            AddImage(rect.gameObject, new Color(0.07f, 0.09f, 0.12f, 0.96f));
-            ApplyOneUiRounding(rect.gameObject, 12f);
+            AddImage(rect.gameObject, ModernGuiTheme.InputBgColor);
+            ApplyOneUiRounding(rect.gameObject, 14f);
             AddOutline(rect.gameObject, ModernGuiTheme.BorderColor, new Vector2(1f, -1f));
 
             var textArea = CreateUiRoot("TextArea", rect);
             Stretch(textArea);
-            textArea.offsetMin = new Vector2(18f, 12f);
-            textArea.offsetMax = new Vector2(-18f, -12f);
+            textArea.offsetMin = new Vector2(18f, 14f);
+            textArea.offsetMax = new Vector2(-18f, -14f);
 
             var placeholder = CreateText(
                 "Placeholder",
@@ -393,7 +393,7 @@ namespace MobilOfl.UI
             AddImage(rect.gameObject, color);
             ApplyOneUiRounding(rect.gameObject, 16f);
             AddOutline(rect.gameObject, ModernGuiTheme.BorderColor, new Vector2(1f, -1f));
-            AddShadow(rect.gameObject, new Color(0f, 0f, 0f, 0.28f), new Vector2(0f, -4f));
+            AddShadow(rect.gameObject, new Color(0f, 0f, 0f, 0.35f), new Vector2(0f, -5f));
 
             var accent = CreateUiRoot("Accent", rect);
             accent.anchorMin = new Vector2(0f, 1f);

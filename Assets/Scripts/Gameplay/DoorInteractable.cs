@@ -15,7 +15,11 @@ namespace MobilOfl.Gameplay
         private Quaternion _closedRotation;
         private Quaternion _openRotation;
         private bool _isOpen;
-        private Vector3 _doorCenterLocalToHinge;
+        private Transform _rotationTransform;
+        private Vector3 _doorCenterLocalToPivot;
+        private AudioSource _audioSource;
+        private AudioClip _openClip;
+        private AudioClip _lockedClip;
 
         private void Awake()
         {
@@ -24,23 +28,26 @@ namespace MobilOfl.Gameplay
                 doorTransform = transform;
             }
 
-            _closedRotation = doorTransform.localRotation;
+            _rotationTransform = ResolveRotationTransform();
+            _closedRotation = _rotationTransform.localRotation;
             _openRotation = _closedRotation * Quaternion.Euler(0f, openAngle, 0f);
-            _doorCenterLocalToHinge = CalculateDoorCenterLocalToHinge();
+            _doorCenterLocalToPivot = CalculateDoorCenterLocalToPivot();
             _isOpen = startsOpen;
-            doorTransform.localRotation = _isOpen ? _openRotation : _closedRotation;
+            _rotationTransform.localRotation = _isOpen ? _openRotation : _closedRotation;
+            EnsureAudio();
+            RefreshPrompt();
         }
 
         private void Update()
         {
-            if (doorTransform == null)
+            if (_rotationTransform == null)
             {
                 return;
             }
 
             var target = _isOpen ? _openRotation : _closedRotation;
-            doorTransform.localRotation = Quaternion.Slerp(
-                doorTransform.localRotation,
+            _rotationTransform.localRotation = Quaternion.Slerp(
+                _rotationTransform.localRotation,
                 target,
                 1f - Mathf.Exp(-turnSpeed * Time.deltaTime));
         }
@@ -56,6 +63,7 @@ namespace MobilOfl.Gameplay
                         : lockedMessage);
                 }
 
+                PlayDoorClip(_lockedClip, 0.82f);
                 return false;
             }
 
@@ -65,6 +73,8 @@ namespace MobilOfl.Gameplay
             }
 
             _isOpen = !_isOpen;
+            PlayDoorClip(_openClip, 0.72f);
+            RefreshPrompt();
             return true;
         }
 
@@ -74,6 +84,8 @@ namespace MobilOfl.Gameplay
             {
                 return false;
             }
+
+            RefreshPrompt();
 
             if (interactor == null)
             {
@@ -119,9 +131,20 @@ namespace MobilOfl.Gameplay
                    CaseSessionManager.Instance.HasTool(requiredToolId);
         }
 
+        private void RefreshPrompt()
+        {
+            if (!HasAccess())
+            {
+                ConfigurePrompt("Kilitli kapi");
+                return;
+            }
+
+            ConfigurePrompt(_isOpen ? "Kapiyi kapat" : "Kapiyi ac");
+        }
+
         private Quaternion CalculateOpenRotation(GameObject interactor)
         {
-            if (doorTransform == null || interactor == null)
+            if (_rotationTransform == null || interactor == null)
             {
                 return _closedRotation * Quaternion.Euler(0f, openAngle, 0f);
             }
@@ -137,9 +160,19 @@ namespace MobilOfl.Gameplay
             return positiveDistance >= negativeDistance ? positiveRotation : negativeRotation;
         }
 
-        private Vector3 CalculateDoorCenterLocalToHinge()
+        private Transform ResolveRotationTransform()
         {
-            if (doorTransform == null)
+            if (doorTransform != null && doorTransform.parent == transform && transform.name.StartsWith("DoorHinge", System.StringComparison.OrdinalIgnoreCase))
+            {
+                return transform;
+            }
+
+            return doorTransform != null ? doorTransform : transform;
+        }
+
+        private Vector3 CalculateDoorCenterLocalToPivot()
+        {
+            if (doorTransform == null || _rotationTransform == null)
             {
                 return Vector3.zero;
             }
@@ -156,18 +189,72 @@ namespace MobilOfl.Gameplay
                 bounds.Encapsulate(renderers[i].bounds);
             }
 
-            return doorTransform.InverseTransformPoint(bounds.center);
+            return _rotationTransform.InverseTransformPoint(bounds.center);
+        }
+
+        private void EnsureAudio()
+        {
+            if (_audioSource == null)
+            {
+                _audioSource = GetComponent<AudioSource>();
+                if (_audioSource == null)
+                {
+                    _audioSource = gameObject.AddComponent<AudioSource>();
+                }
+
+                _audioSource.playOnAwake = false;
+                _audioSource.spatialBlend = 1f;
+                _audioSource.minDistance = 1.4f;
+                _audioSource.maxDistance = 8f;
+                _audioSource.rolloffMode = AudioRolloffMode.Linear;
+                _audioSource.volume = 0.75f;
+            }
+
+            _openClip ??= LoadFreesoundClip("door_open");
+            _lockedClip ??= LoadFreesoundClip("door_locked");
+        }
+
+        private void PlayDoorClip(AudioClip clip, float volumeScale)
+        {
+            EnsureAudio();
+            if (_audioSource == null || clip == null)
+            {
+                return;
+            }
+
+            _audioSource.pitch = Random.Range(0.94f, 1.06f);
+            _audioSource.PlayOneShot(clip, volumeScale);
+        }
+
+        private static AudioClip LoadFreesoundClip(string prefix)
+        {
+            var clips = Resources.LoadAll<AudioClip>("Audio/Freesound");
+            for (var i = 0; i < clips.Length; i++)
+            {
+                var clip = clips[i];
+                if (clip != null && clip.name.StartsWith(prefix, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return clip;
+                }
+            }
+
+            return null;
         }
 
         private Vector3 GetDoorCenterForRotation(Quaternion localRotation)
         {
-            var parent = doorTransform.parent;
-            if (parent == null)
+            if (_rotationTransform == null)
             {
-                return doorTransform.position + localRotation * _doorCenterLocalToHinge;
+                return transform.position;
             }
 
-            return parent.TransformPoint(doorTransform.localPosition + localRotation * _doorCenterLocalToHinge);
+            var parent = _rotationTransform.parent;
+            if (parent == null)
+            {
+                return _rotationTransform.position + localRotation * _doorCenterLocalToPivot;
+            }
+
+            return parent.TransformPoint(_rotationTransform.localPosition + localRotation * _doorCenterLocalToPivot);
         }
     }
 }

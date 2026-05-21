@@ -186,57 +186,6 @@ namespace MobilOfl.Gameplay
                 return;
             }
 
-            System.Array.Sort(npcs, (left, right) =>
-            {
-                var leftKey = left == null ? float.MaxValue : left.transform.position.x * 1000f + left.transform.position.z;
-                var rightKey = right == null ? float.MaxValue : right.transform.position.x * 1000f + right.transform.position.z;
-                return leftKey.CompareTo(rightKey);
-            });
-
-            var profiles = new[]
-            {
-                new NpcDialogueProfile(
-                    "npc.security-guard",
-                    "Guvenlik Gorevlisi",
-                    "Kamera kaydini gormeden net konusamam. Once guvenlik odasindaki terminale bak.",
-                    "22:15'te bilisim kulubu ogrencisini laboratuvar koridorunda gordum. Aceleciydi ve elinde not defteri vardi.",
-                    "evidence.security-log",
-                    "evidence.guard-testimony",
-                    new Color(0.96f, 0.68f, 0.24f, 1f)),
-                new NpcDialogueProfile(
-                    "npc.library-student",
-                    "Kutuphane Ogrencisi",
-                    "Kutuphanede bir not dustu ama kime ait oldugundan emin degilim.",
-                    "Not, bilisim kulubu ogrencisinin defterinden dustu. Panikleyip hemen koridora cikti.",
-                    "evidence.answer-key-note",
-                    "evidence.student-testimony",
-                    new Color(0.25f, 0.82f, 1f, 1f)),
-                new NpcDialogueProfile(
-                    "npc.canteen-worker",
-                    "Kantin Calisani",
-                    "Gece vardiyasinda cok kisi gormedim. Elindeki notu biraz daha netlestir.",
-                    "Ogrenci gece enerji icecegi aldi, sonra laboratuvar koridoruna dogru kostu.",
-                    "evidence.student-testimony",
-                    "evidence.canteen-testimony",
-                    new Color(0.32f, 0.9f, 0.58f, 1f)),
-                new NpcDialogueProfile(
-                    "npc.teacher-assistant",
-                    "Ogretmen Yardimcisi",
-                    "Dolap anahtari ve arsiv kaydi olmadan kimseyi suclayamam.",
-                    "Arsiv girislerinde ayni ogrencinin adi var. Soru dolabina ulasmak icin yedek anahtari aramis olabilir.",
-                    "evidence.archive-ledger",
-                    string.Empty,
-                    new Color(0.78f, 0.64f, 1f, 1f)),
-                new NpcDialogueProfile(
-                    "npc.hall-monitor",
-                    "Nobetci Ogrenci",
-                    "Koridorda hareket vardi ama once diger delilleri toplayin.",
-                    "Gece aceleyle gecen kisinin cantasinda mavi bir defter gordum. Bu ifade not zincirini destekliyor.",
-                    "evidence.guard-testimony",
-                    string.Empty,
-                    new Color(1f, 0.78f, 0.3f, 1f))
-            };
-
             for (var i = 0; i < npcs.Length; i++)
             {
                 var npc = npcs[i];
@@ -245,7 +194,7 @@ namespace MobilOfl.Gameplay
                     continue;
                 }
 
-                var profile = profiles[Mathf.Min(i, profiles.Length - 1)];
+                var profile = ResolveNpcProfile(npc);
                 npc.ConfigureDialogue(
                     activeCase,
                     profile.Id,
@@ -267,8 +216,80 @@ namespace MobilOfl.Gameplay
 
             return string.IsNullOrWhiteSpace(npc.NpcId) ||
                    npc.NpcId == "npc.default" ||
-                   npc.NpcDisplayName == "NPC" ||
-                   string.IsNullOrWhiteSpace(npc.RequiredEvidenceId);
+                   npc.NpcDisplayName == "NPC";
+        }
+
+        private static NpcDialogueProfile ResolveNpcProfile(NpcInteractable npc)
+        {
+            var key = (npc.name + " " + npc.NpcDisplayName + " " + npc.NpcId).ToLowerInvariant();
+            if (key.Contains("guvenlik") || key.Contains("gorevlisi") || key.Contains("guard") || key.Contains("npc_01"))
+            {
+                return new NpcDialogueProfile(
+                    "npc.guard",
+                    "Guvenlik Gorevlisi",
+                    "Nobet notunu gormeden kamera boslugunu net anlatamam.",
+                    "Nobet notu kamera boslugunu dogruluyor. Gece 22:15'te bilisim kulubu ogrencisi laboratuvar koridorundaydi.",
+                    "evidence.security-drawer-note",
+                    "evidence.guard-testimony",
+                    new Color(0.96f, 0.68f, 0.24f, 1f));
+            }
+
+            if (key.Contains("kutuphane") || key.Contains("library") || key.Contains("npc_02"))
+            {
+                return new NpcDialogueProfile(
+                    "npc.library-student",
+                    "Kutuphane Ogrencisi",
+                    "Ben supheli gorunuyorum ama o saatte bilgisayar rezervasyonum vardi. Once oturum kaydina bakin.",
+                    "Oturum kaydi beni dogruluyor. Not, bilisim kulubu ogrencisinin defterinden dustu; ben sadece yakin masadaydim.",
+                    "evidence.library-alibi",
+                    "evidence.student-testimony",
+                    new Color(0.25f, 0.82f, 1f, 1f));
+            }
+
+            if (key.Contains("kantin") || key.Contains("canteen") || key.Contains("npc_03"))
+            {
+                return new NpcDialogueProfile(
+                    "npc.canteen-worker",
+                    "Kantin Calisani",
+                    "Gece gelen tek kisi ogretmen yardimcisiydi, baska birini gormedim.",
+                    "Tamam, fis saatini yanlis soyledim. Bilisim kulubu ogrencisi enerji icecegi alip laboratuvar tarafina kostu.",
+                    "evidence.canteen-receipt",
+                    "evidence.canteen-testimony",
+                    new Color(0.32f, 0.9f, 0.58f, 1f));
+            }
+
+            if (key.Contains("ogretmen") || key.Contains("teacher") || key.Contains("npc_04"))
+            {
+                return new NpcDialogueProfile(
+                    "npc.teacher-assistant",
+                    "Ogretmen Yardimcisi",
+                    "Dolap anahtari kayboldu ama bunu herkes biliyor olabilir.",
+                    "Yedek anahtar bende degildi. Dolabin yanina en son bilisim kulubu ogrencisi geldi.",
+                    "evidence.locker-key",
+                    string.Empty,
+                    new Color(1f, 0.78f, 0.3f, 1f));
+            }
+
+            if (key.Contains("arsiv") || key.Contains("archive") || key.Contains("npc_05"))
+            {
+                return new NpcDialogueProfile(
+                    "npc.archive-clerk",
+                    "Arsiv Sorumlusu",
+                    "Defter olmadan arsiv odasi hakkinda resmi bir sey soyleyemem.",
+                    "Giris defterine gore bilisim kulubu ogrencisi sinavdan hemen once arsiv anahtarini sormustu.",
+                    "evidence.archive-ledger",
+                    string.Empty,
+                    new Color(0.78f, 0.64f, 1f, 1f));
+            }
+
+            return new NpcDialogueProfile(
+                "npc.guard",
+                "Guvenlik Gorevlisi",
+                "Nobet notunu gormeden kamera boslugunu net anlatamam.",
+                "Nobet notu kamera boslugunu dogruluyor. Gece 22:15'te bilisim kulubu ogrencisi laboratuvar koridorundaydi.",
+                "evidence.security-drawer-note",
+                "evidence.guard-testimony",
+                new Color(0.96f, 0.68f, 0.24f, 1f));
         }
 
         private struct NpcDialogueProfile

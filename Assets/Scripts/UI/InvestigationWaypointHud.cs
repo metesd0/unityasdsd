@@ -76,11 +76,11 @@ namespace MobilOfl.UI
                 return true;
             }
 
-            if (!session.HasEvidence("evidence.guard-testimony"))
+            if (!session.HasEvidence("evidence.library-alibi"))
             {
-                title = "Guvenlik Gorevlisi";
-                worldPosition = new Vector3(-2f, 1f, 9f);
-                subtitle = "Kamera kaydini bulduysan tanigin ifadesini acabilirsin.";
+                title = "Bilisim Oturum Kaydi";
+                worldPosition = new Vector3(7.8f, 1f, 9.5f);
+                subtitle = "Okul ag kaydi, kutuphane ogrencisinin mazeretini dogrular.";
                 return true;
             }
 
@@ -88,7 +88,23 @@ namespace MobilOfl.UI
             {
                 title = "Kutuphane Ogrencisi";
                 worldPosition = new Vector3(5f, 1f, -2f);
-                subtitle = "Notu gordukten sonra ogrenci yeni bir ifade verebilir.";
+                subtitle = "Oturum kaydindan sonra ogrenci yanlis hedef olmadigini anlatir.";
+                return true;
+            }
+
+            if (!session.HasEvidence("evidence.canteen-receipt"))
+            {
+                title = "Kantin Fisi";
+                worldPosition = new Vector3(13.2f, 1f, 8.8f);
+                subtitle = "Kasa ustundeki fis, kantin ifadesindeki saat tutarsizligini acar.";
+                return true;
+            }
+
+            if (!session.HasEvidence("evidence.canteen-testimony"))
+            {
+                title = "Kantin Calisani";
+                worldPosition = new Vector3(13.2f, 1f, 8.8f);
+                subtitle = "Fisle birlikte konusursan ilk yalan ifade kirilir.";
                 return true;
             }
 
@@ -96,7 +112,7 @@ namespace MobilOfl.UI
             {
                 title = "Arsiv Gecis Karti";
                 worldPosition = new Vector3(7.8f, 1f, 9.5f);
-                subtitle = "Ogretmenler odasindaki kart arsiv kapisini ve raf aramasini acar.";
+                subtitle = "Kantin ifadesinden sonra karti al. Arsiv kapisi ve raf aramasi acilir.";
                 return true;
             }
 
@@ -105,14 +121,6 @@ namespace MobilOfl.UI
                 title = "Arsiv Kanadi";
                 worldPosition = new Vector3(-15f, 1f, 9f);
                 subtitle = "Kart sende. Raf kutusunu arayip giris defterini ortaya cikar.";
-                return true;
-            }
-
-            if (!session.HasEvidence("evidence.canteen-testimony"))
-            {
-                title = "Kantin Calisani";
-                worldPosition = new Vector3(13.2f, 1f, 8.8f);
-                subtitle = "Kutuphane notundan sonra kantin tarafinda yeni tanik aciliyor.";
                 return true;
             }
 
@@ -132,11 +140,27 @@ namespace MobilOfl.UI
                 return true;
             }
 
+            if (!session.HasEvidence("evidence.security-drawer-note"))
+            {
+                title = "Guvenlik Cekmecesi";
+                worldPosition = new Vector3(-8.1f, 1f, 9.8f);
+                subtitle = "Maymuncukla kilitli cekmeceyi ac; nobet notu kamera boslugunu tamamlar.";
+                return true;
+            }
+
+            if (!session.HasEvidence("evidence.guard-testimony"))
+            {
+                title = "Guvenlik Gorevlisi";
+                worldPosition = new Vector3(-2f, 1f, 9f);
+                subtitle = "Nobet notundan sonra guvenlik gorevlisi kamera kaydini net ifade eder.";
+                return true;
+            }
+
             if (session.HasAnyAccusableSuspect())
             {
-                title = "Vaka Dosyasi";
-                worldPosition = playerTarget != null ? playerTarget.position : new Vector3(0f, 1f, -5.6f);
-                subtitle = "Notebook'u acip supheliyi secmek icin artik yeterli delil var.";
+                title = "Guvenlik Gorevlisi";
+                worldPosition = new Vector3(-2f, 1f, 9f);
+                subtitle = "Son ifade vakayi kapatacak. Guvenlik gorevlisine geri don.";
                 return true;
             }
 

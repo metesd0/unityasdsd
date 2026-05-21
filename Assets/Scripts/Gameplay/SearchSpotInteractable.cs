@@ -15,18 +15,22 @@ namespace MobilOfl.Gameplay
         [SerializeField] private float useDistance = 5.25f;
         [SerializeField] private string requiredToolId;
         [SerializeField] private string missingToolMessage = "Bu alan icin uygun ekipman gerekiyor.";
+        [SerializeField] private string requiredEvidenceId;
+        [SerializeField] private string missingRequirementMessage = "Bu arama icin once ilgili ipucunu bulman gerekiyor.";
         [SerializeField] private string searchCompleteMessage = "Arama tamamlandi.";
         [SerializeField] private GameObject searchedVisual;
         [SerializeField] private bool disableObjectOnSearch = true;
 
         private bool _isSubscribed;
         private float _nextMissingToolMessageAt;
+        private float _nextMissingRequirementMessageAt;
         private Renderer[] _cachedRenderers;
         private Collider[] _cachedColliders;
         private Behaviour[] _cachedBehaviours;
 
         public string HiddenEvidenceId => hiddenEvidenceId;
         public string RequiredToolId => ResolveRequiredToolId();
+        public string RequiredEvidenceId => requiredEvidenceId;
         public string MarkerLabel => string.IsNullOrWhiteSpace(markerLabel) ? "Aranacak Alan" : markerLabel;
         public Color MarkerColor => markerColor.a <= 0f ? new Color(0.92f, 0.74f, 0.3f, 1f) : markerColor;
         public bool IsMarkerVisible =>
@@ -96,7 +100,13 @@ namespace MobilOfl.Gameplay
 
             if (HasRequiredTool())
             {
-                return true;
+                if (HasRequiredEvidence())
+                {
+                    return true;
+                }
+
+                TryPublishMissingRequirement();
+                return false;
             }
 
             TryPublishMissingToolMessage();
@@ -125,6 +135,12 @@ namespace MobilOfl.Gameplay
                 return false;
             }
 
+            if (!HasRequiredEvidence())
+            {
+                TryPublishMissingRequirement(true);
+                return false;
+            }
+
             var networkCaseState = NetworkCaseState.Instance;
             var collected = networkCaseState != null && networkCaseState.IsOnlineSessionActive
                 ? networkCaseState.RequestCollectEvidence(hiddenEvidenceId)
@@ -146,6 +162,57 @@ namespace MobilOfl.Gameplay
             return CaseSessionManager.Instance == null ||
                    string.IsNullOrWhiteSpace(resolvedRequiredToolId) ||
                    CaseSessionManager.Instance.HasTool(resolvedRequiredToolId);
+        }
+
+        public void ConfigureEvidenceGate(string requiredEvidence, string message)
+        {
+            requiredEvidenceId = string.IsNullOrWhiteSpace(requiredEvidence) ? string.Empty : requiredEvidence.Trim();
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                missingRequirementMessage = message.Trim();
+            }
+        }
+
+        private bool HasRequiredEvidence()
+        {
+            return CaseSessionManager.Instance == null ||
+                   string.IsNullOrWhiteSpace(requiredEvidenceId) ||
+                   CaseSessionManager.Instance.HasEvidence(requiredEvidenceId);
+        }
+
+        private void TryPublishMissingRequirement(bool force = false)
+        {
+            if (CaseSessionManager.Instance == null)
+            {
+                return;
+            }
+
+            if (!force && Time.time < _nextMissingRequirementMessageAt)
+            {
+                return;
+            }
+
+            _nextMissingRequirementMessageAt = Time.time + 1.25f;
+            CaseSessionManager.Instance.PublishMessage(ResolveMissingRequirementMessage());
+        }
+
+        private string ResolveMissingRequirementMessage()
+        {
+            if (!string.IsNullOrWhiteSpace(missingRequirementMessage))
+            {
+                return missingRequirementMessage;
+            }
+
+            if (CaseSessionManager.Instance != null)
+            {
+                var requiredEvidence = CaseSessionManager.Instance.GetEvidence(requiredEvidenceId);
+                if (requiredEvidence != null)
+                {
+                    return "Once gerekli ipucunu bul: " + requiredEvidence.Title;
+                }
+            }
+
+            return "Bu aramayi yapmak icin once onceki ipucunu tamamlaman gerekiyor.";
         }
 
         private void TryPublishMissingToolMessage(bool force = false)

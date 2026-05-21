@@ -31,6 +31,21 @@ MonoBehaviour:
     category: 0
     icon: {fileID: 0}
     isCritical: 1
+  - id: evidence.library-alibi
+    title: Okul Ag Oturum Kaydi
+    description: Bilisim kulubundeki okul ag oturum kaydi, supheli duran ogrencinin
+      olay saatinde kutuphane bilgisayarinda oturum actigini ve yanlis hedef oldugunu
+      gosteriyor.
+    category: 1
+    icon: {fileID: 0}
+    isCritical: 0
+  - id: evidence.canteen-receipt
+    title: Kantin Fis Tutarsizligi
+    description: Kantin kasasindaki fis, calisanin ilk ifadesindeki saat ve urun
+      bilgisinin bilerek karistirildigini gosteriyor.
+    category: 0
+    icon: {fileID: 0}
+    isCritical: 0
   - id: evidence.locker-key
     title: Yedek Dolap Anahtari
     description: Ogretmenler odasinda gizlenmis bir yedek dolap anahtari bulundu.
@@ -58,6 +73,13 @@ MonoBehaviour:
     category: 0
     icon: {fileID: 0}
     isCritical: 1
+  - id: evidence.security-drawer-note
+    title: Guvenlik Cekmecesi Nobet Notu
+    description: Kilitli guvenlik cekmecesindeki not, kamera boslugunun nobet degisimi
+      sirasinda olustugunu ve gece hareketinin saklanmadigini dogruluyor.
+    category: 0
+    icon: {fileID: 0}
+    isCritical: 1
   - id: evidence.canteen-testimony
     title: Kantin Ifadesi
     description: Kantin calisani, gece bilisim kulubu ogrencisinin enerji icecegi
@@ -72,10 +94,14 @@ MonoBehaviour:
     requiredEvidenceIds:
     - evidence.security-log
     - evidence.answer-key-note
+    - evidence.library-alibi
+    - evidence.canteen-receipt
     - evidence.guard-testimony
     - evidence.student-testimony
     - evidence.archive-ledger
+    - evidence.security-drawer-note
     - evidence.canteen-testimony
+    - evidence.locker-key
   - id: suspect.teacher-assistant
     displayName: Ogretmen Yardimcisi
     summary: Sinav programina ve soru dolabina erisimi olan personel.
@@ -88,18 +114,26 @@ MonoBehaviour:
     requiredEvidenceIds:
     - evidence.locker-key
     - evidence.canteen-testimony
+  - id: suspect.library-student
+    displayName: Kutuphane Ogrencisi
+    summary: Notun bulundugu masaya yakin duran ama oturum kaydi sayesinde olay aninda
+      kutuphanede kaldigi anlasilan yanlis hedef.
+    requiredEvidenceIds:
+    - evidence.answer-key-note
+    - evidence.library-alibi
   culpritSuspectId: suspect.tech-club
   culpritMotive: Sinavdan once sorulari satip para kazanmak istedi.
-  culpritTimeline: Gece laboratuvar koridoruna girdi, notlari aldi, arsivde onceki
-    kayitlari inceledi ve ogretmenler odasindaki dolabi acmak icin yedek anahtari
-    kullandi.
+  culpritTimeline: Once kantinden enerji icecegi aldi, sonra laboratuvar koridoruna
+    girdi, arsiv kayitlarini kontrol etti ve ogretmenler odasindaki dolabi acmak
+    icin yedek anahtari kullandi.
   motiveOptions:
   - Sinavdan once sorulari satip para kazanmak istedi.
   - Arkadasini korumak icin sorulari sakladi.
   - Ogretmen yardimcisini suclu gostermek icin sahte iz birakti.
   timelineOptions:
-  - Gece laboratuvar koridoruna girdi, notlari aldi, arsivde onceki kayitlari inceledi
-    ve ogretmenler odasindaki dolabi acmak icin yedek anahtari kullandi.
+  - Once kantinden enerji icecegi aldi, sonra laboratuvar koridoruna girdi, arsiv
+    kayitlarini kontrol etti ve ogretmenler odasindaki dolabi acmak icin yedek anahtari
+    kullandi.
   - Once kantinden enerji icecegi aldi, sonra dogrudan kutuphaneye gidip notu orada
     sakladi.
   - Ogretmenler odasindaki dolabi acti, ardindan guvenlik odasinda kamera kaydini

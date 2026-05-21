@@ -115,7 +115,16 @@ namespace MobilOfl.Gameplay
 
             if (!_ambienceSource.isPlaying)
             {
-                GenerateAmbienceClip();
+                if (_ambienceSource.clip == null)
+                {
+                    _ambienceSource.clip = LoadFreesoundClip("ambience_school_hall");
+                }
+
+                if (_ambienceSource.clip == null)
+                {
+                    GenerateAmbienceClip();
+                }
+
                 _ambienceSource.Play();
             }
 
@@ -195,6 +204,21 @@ namespace MobilOfl.Gameplay
             _heartbeatSource.loop = false;
             _heartbeatSource.volume = heartbeatVolume;
             _heartbeatSource.priority = 64;
+        }
+
+        private static AudioClip LoadFreesoundClip(string prefix)
+        {
+            var clips = Resources.LoadAll<AudioClip>("Audio/Freesound");
+            for (var i = 0; i < clips.Length; i++)
+            {
+                var clip = clips[i];
+                if (clip != null && clip.name.StartsWith(prefix, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return clip;
+                }
+            }
+
+            return null;
         }
 
         private void ResolveReferences()

@@ -23,6 +23,9 @@ namespace MobilOfl.Gameplay
         [SerializeField] private float waitDuration = 1.15f;
         [SerializeField] private float waitJitter = 0.45f;
         [SerializeField] private float arrivalDistance = 0.18f;
+        [SerializeField] private float maxPatrolRadius = 2.6f;
+        [SerializeField] private float stuckDistanceThreshold = 0.025f;
+        [SerializeField] private float stuckTimeThreshold = 0.75f;
         [SerializeField] private float viewDistance = 6.8f;
         [SerializeField] private float viewAngle = 62f;
         [SerializeField] private float sightPressurePerSecond = 0.52f;
@@ -39,10 +42,13 @@ namespace MobilOfl.Gameplay
         private int _currentPatrolIndex;
         private float _waitUntil;
         private float _currentMoveSpeed;
+        private Vector3 _lastPosition;
+        private float _stuckSince;
 
         private void Awake()
         {
             _anchorPosition = transform.position;
+            _lastPosition = transform.position;
             ResolveReferences();
         }
 
@@ -84,16 +90,24 @@ namespace MobilOfl.Gameplay
             if (!patrolEnabled || patrolOffsets == null || patrolOffsets.Length <= 1)
             {
                 _currentMoveSpeed = Mathf.MoveTowards(_currentMoveSpeed, 0f, deceleration * Time.deltaTime);
+                _lastPosition = transform.position;
                 return;
             }
 
             if (Time.time < _waitUntil)
             {
                 _currentMoveSpeed = Mathf.MoveTowards(_currentMoveSpeed, 0f, deceleration * Time.deltaTime);
+                _lastPosition = transform.position;
                 return;
             }
 
-            var targetPosition = _anchorPosition + patrolOffsets[_currentPatrolIndex];
+            if (IsOutsidePatrolBubble())
+            {
+                RecenterPatrolWithoutTeleport();
+                return;
+            }
+
+            var targetPosition = GetBoundedPatrolTarget(_currentPatrolIndex);
             var toTarget = targetPosition - transform.position;
             toTarget.y = 0f;
 
@@ -116,18 +130,78 @@ namespace MobilOfl.Gameplay
             var moveStep = Mathf.Min(_currentMoveSpeed * Time.deltaTime, toTarget.magnitude);
             if (!CanMove(moveDirection, moveStep + obstacleProbeDistance))
             {
-                _currentPatrolIndex = (_currentPatrolIndex + 1) % patrolOffsets.Length;
-                _currentMoveSpeed = 0f;
-                _waitUntil = Time.time + GetWaitDuration();
+                HoldThenAdvancePatrol();
                 return;
             }
 
             transform.position += moveDirection * moveStep;
+            UpdateStuckState();
 
             if (toTarget.sqrMagnitude > 0.001f)
             {
                 var targetRotation = Quaternion.LookRotation(moveDirection, Vector3.up);
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1f - Mathf.Exp(-turnSpeed * Time.deltaTime));
+            }
+        }
+
+        private Vector3 GetBoundedPatrolTarget(int patrolIndex)
+        {
+            var offset = patrolOffsets[Mathf.Clamp(patrolIndex, 0, patrolOffsets.Length - 1)];
+            offset.y = 0f;
+            var radius = Mathf.Max(arrivalDistance, maxPatrolRadius);
+            if (offset.magnitude > radius)
+            {
+                offset = offset.normalized * radius;
+            }
+
+            return _anchorPosition + offset;
+        }
+
+        private bool IsOutsidePatrolBubble()
+        {
+            var flatOffset = transform.position - _anchorPosition;
+            flatOffset.y = 0f;
+            return flatOffset.magnitude > Mathf.Max(maxPatrolRadius + 0.45f, arrivalDistance * 2f);
+        }
+
+        private void RecenterPatrolWithoutTeleport()
+        {
+            _currentPatrolIndex = 0;
+            _currentMoveSpeed = 0f;
+            _waitUntil = Time.time + GetWaitDuration();
+            _lastPosition = transform.position;
+            _stuckSince = 0f;
+        }
+
+        private void HoldThenAdvancePatrol()
+        {
+            _currentPatrolIndex = (_currentPatrolIndex + 1) % patrolOffsets.Length;
+            _currentMoveSpeed = 0f;
+            _waitUntil = Time.time + GetWaitDuration();
+            _lastPosition = transform.position;
+            _stuckSince = 0f;
+        }
+
+        private void UpdateStuckState()
+        {
+            var flatDelta = transform.position - _lastPosition;
+            flatDelta.y = 0f;
+            if (_currentMoveSpeed <= 0.05f || flatDelta.magnitude >= stuckDistanceThreshold)
+            {
+                _lastPosition = transform.position;
+                _stuckSince = 0f;
+                return;
+            }
+
+            if (_stuckSince <= 0f)
+            {
+                _stuckSince = Time.time;
+                return;
+            }
+
+            if (Time.time - _stuckSince >= stuckTimeThreshold)
+            {
+                HoldThenAdvancePatrol();
             }
         }
 
@@ -260,6 +334,9 @@ namespace MobilOfl.Gameplay
             waitDuration = Mathf.Max(0f, waitDuration);
             waitJitter = Mathf.Max(0f, waitJitter);
             arrivalDistance = Mathf.Max(0.01f, arrivalDistance);
+            maxPatrolRadius = Mathf.Max(arrivalDistance, maxPatrolRadius);
+            stuckDistanceThreshold = Mathf.Max(0.001f, stuckDistanceThreshold);
+            stuckTimeThreshold = Mathf.Max(0.05f, stuckTimeThreshold);
         }
     }
 }

@@ -8,13 +8,15 @@ namespace MobilOfl.Visuals
         [SerializeField] private Color baseColor = new Color(0.2f, 0.9f, 1f);
         [SerializeField] private Color emissionColor = new Color(0.15f, 0.85f, 1f);
         [SerializeField] private float pulseSpeed = 2.6f;
-        [SerializeField] private float pulseAmount = 0.08f;
-        [SerializeField] private float rotationSpeed = 35f;
-        [SerializeField] private float bobHeight = 0.06f;
+        [SerializeField] private float pulseAmount;
+        [SerializeField] private float rotationSpeed;
+        [SerializeField] private float bobHeight;
         [SerializeField] private float bobSpeed = 1.8f;
         [SerializeField] private float proximityRange = 6f;
         [SerializeField] private float proximityGlowBoost = 1.8f;
         [SerializeField] private Light glowLight;
+        [SerializeField] private bool ensureGlowLight = true;
+        [SerializeField] private float glowLightHeight = 0.35f;
 
         private Vector3 _baseScale;
         private Vector3 _basePosition;
@@ -26,6 +28,19 @@ namespace MobilOfl.Visuals
             if (targetRenderer == null)
             {
                 targetRenderer = GetComponentInChildren<Renderer>();
+            }
+
+            if (glowLight == null && ensureGlowLight)
+            {
+                var glowObject = new GameObject("EvidenceGlow");
+                glowObject.transform.SetParent(transform, false);
+                glowObject.transform.localPosition = Vector3.up * glowLightHeight;
+                glowLight = glowObject.AddComponent<Light>();
+                glowLight.type = LightType.Point;
+                glowLight.color = emissionColor;
+                glowLight.range = 2.6f;
+                glowLight.intensity = 0.65f;
+                glowLight.shadows = LightShadows.None;
             }
 
             _baseScale = transform.localScale;
@@ -46,12 +61,21 @@ namespace MobilOfl.Visuals
         private void Update()
         {
             var pulse = (Mathf.Sin(Time.time * pulseSpeed) + 1f) * 0.5f;
-            transform.localScale = _baseScale * (1f + pulse * pulseAmount);
-            transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime, Space.World);
+            if (pulseAmount > 0f)
+            {
+                transform.localScale = _baseScale * (1f + pulse * pulseAmount);
+            }
 
-            // Vertical bob
-            var bob = Mathf.Sin(Time.time * bobSpeed) * bobHeight;
-            transform.localPosition = _basePosition + Vector3.up * bob;
+            if (Mathf.Abs(rotationSpeed) > 0.001f)
+            {
+                transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime, Space.World);
+            }
+
+            if (bobHeight > 0f)
+            {
+                var bob = Mathf.Sin(Time.time * bobSpeed) * bobHeight;
+                transform.localPosition = _basePosition + Vector3.up * bob;
+            }
 
             // Proximity glow
             UpdateProximityFactor();

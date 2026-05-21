@@ -12,15 +12,19 @@ namespace MobilOfl.Gameplay
         [SerializeField] private string markerLabel = "Ekipman";
         [SerializeField] private Color markerColor = default;
         [SerializeField] private string pickupMessage = "Ekipman alindi.";
+        [SerializeField] private string requiredEvidenceId;
+        [SerializeField] private string missingRequirementMessage = "Bu ekipman icin once ilgili ipucunu bulman gerekiyor.";
         [SerializeField] private GameObject collectedVisual;
         [SerializeField] private bool disableObjectOnPickup = true;
 
         private bool _isSubscribed;
+        private float _nextMissingRequirementMessageAt;
         private Renderer[] _cachedRenderers;
         private Collider[] _cachedColliders;
         private Behaviour[] _cachedBehaviours;
 
         public string ToolId => toolId;
+        public string RequiredEvidenceId => requiredEvidenceId;
         public string MarkerLabel => string.IsNullOrWhiteSpace(markerLabel) ? toolDisplayName : markerLabel;
         public Color MarkerColor => markerColor.a <= 0f ? new Color(0.98f, 0.7f, 0.24f, 1f) : markerColor;
         public bool IsMarkerVisible =>
@@ -108,6 +112,12 @@ namespace MobilOfl.Gameplay
                 return false;
             }
 
+            if (!HasRequiredEvidence())
+            {
+                TryPublishMissingRequirement(true);
+                return false;
+            }
+
             var networkCaseState = NetworkCaseState.Instance;
             if (networkCaseState != null && networkCaseState.IsOnlineSessionActive)
             {
@@ -121,6 +131,57 @@ namespace MobilOfl.Gameplay
 
             ApplyCollectedState();
             return true;
+        }
+
+        public void ConfigureEvidenceGate(string requiredEvidence, string message)
+        {
+            requiredEvidenceId = string.IsNullOrWhiteSpace(requiredEvidence) ? string.Empty : requiredEvidence.Trim();
+            if (!string.IsNullOrWhiteSpace(message))
+            {
+                missingRequirementMessage = message.Trim();
+            }
+        }
+
+        private bool HasRequiredEvidence()
+        {
+            return CaseSessionManager.Instance == null ||
+                   string.IsNullOrWhiteSpace(requiredEvidenceId) ||
+                   CaseSessionManager.Instance.HasEvidence(requiredEvidenceId);
+        }
+
+        private void TryPublishMissingRequirement(bool force = false)
+        {
+            if (CaseSessionManager.Instance == null)
+            {
+                return;
+            }
+
+            if (!force && Time.time < _nextMissingRequirementMessageAt)
+            {
+                return;
+            }
+
+            _nextMissingRequirementMessageAt = Time.time + 1.25f;
+            CaseSessionManager.Instance.PublishMessage(ResolveMissingRequirementMessage());
+        }
+
+        private string ResolveMissingRequirementMessage()
+        {
+            if (!string.IsNullOrWhiteSpace(missingRequirementMessage))
+            {
+                return missingRequirementMessage;
+            }
+
+            if (CaseSessionManager.Instance != null)
+            {
+                var requiredEvidence = CaseSessionManager.Instance.GetEvidence(requiredEvidenceId);
+                if (requiredEvidence != null)
+                {
+                    return "Once gerekli ipucunu bul: " + requiredEvidence.Title;
+                }
+            }
+
+            return "Bu ekipmani almak icin once onceki ipucunu tamamlaman gerekiyor.";
         }
 
         private void HandleToolUnlocked(string unlockedToolId, string _)

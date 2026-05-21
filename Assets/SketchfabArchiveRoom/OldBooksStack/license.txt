@@ -1,0 +1,11 @@
+Model Information:
+* title:	Stack Of Old Books
+* source:	https://sketchfab.com/3d-models/stack-of-old-books-c6ca6667fd7d4381bd184874dcf44075
+* author:	Arjun Perayil (https://sketchfab.com/inzanebeast)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Stack Of Old Books" (https://sketchfab.com/3d-models/stack-of-old-books-c6ca6667fd7d4381bd184874dcf44075) by Arjun Perayil (https://sketchfab.com/inzanebeast) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

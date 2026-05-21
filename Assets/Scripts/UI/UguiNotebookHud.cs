@@ -795,7 +795,7 @@ namespace MobilOfl.UI
 
             CreateFinalChoiceGroup(
                 card,
-                "Zaman Cizelgesi",
+                "Olay Sirasi",
                 session.ActiveCase.TimelineOptions,
                 session.ActiveCase.CulpritTimeline,
                 _selectedTimeline,
@@ -997,7 +997,7 @@ namespace MobilOfl.UI
 
             if (!HasFinalDecisionSelections())
             {
-                session.PublishMessage("Final suclama icin once motivasyon ve zaman cizelgesi sec.");
+                session.PublishMessage("Final suclama icin once motivasyon ve olay sirasi sec.");
                 RefreshImmediate();
                 return;
             }
@@ -1048,7 +1048,8 @@ namespace MobilOfl.UI
             }
 
             var target = visible ? 1f : 0f;
-            _openBlend = Mathf.MoveTowards(_openBlend, target, Time.unscaledDeltaTime * 6f);
+            var deltaTime = Time.unscaledDeltaTime > 0f ? Time.unscaledDeltaTime : 1f / 60f;
+            _openBlend = Mathf.MoveTowards(_openBlend, target, deltaTime * 6f);
             _overlayGroup.alpha = _openBlend;
             _overlayGroup.interactable = _openBlend > 0.98f;
             _overlayGroup.blocksRaycasts = _openBlend > 0.02f;

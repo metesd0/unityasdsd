@@ -1,0 +1,11 @@
+Model Information:
+* title:	Document Ring Binder
+* source:	https://sketchfab.com/3d-models/document-ring-binder-c91efa31b18749bdab2605fde1571856
+* author:	Kami Rapacz (https://sketchfab.com/kuroderuta)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Document Ring Binder" (https://sketchfab.com/3d-models/document-ring-binder-c91efa31b18749bdab2605fde1571856) by Kami Rapacz (https://sketchfab.com/kuroderuta) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
